@@ -1,0 +1,42 @@
+[
+  {
+    "Index": 0,
+    "Title": "키보드 팔아요~",
+    "Product": "레오폴드 키보드",
+    "Price": "100000",
+    "Image": "/images/leopold.jpg",
+    "Explanation": "사용감 별로 없고 상태 매우 좋습니다."
+  },
+  {
+    "Index": 1,
+    "Title": "아이폰13 팝니다",
+    "Product": "아이폰13 스페이스그레이",
+    "Price": "400000",
+    "Image": "/images/iphone13sg.jpg",
+    "Explanation": "잔기스 없고 사용한지 1년 됬습니다."
+  },
+  {
+    "Index": 1,
+    "Title": "아이폰13 팝니다",
+    "Product": "아이폰13 스페이스그레이",
+    "Price": "400000",
+    "Image": "/images/iphone13sg.jpg",
+    "Explanation": "잔기스 많고 사용한지 10년 됬습니다."
+  },
+  {
+    "Index": 1,
+    "Title": "아이폰13 팝니다",
+    "Product": "아이폰13 스페이스그레이",
+    "Price": "400000",
+    "Image": "/images/iphone13sg.jpg",
+    "Explanation": "잔기스 없고 사용한지 1년 됬습니다."
+  },
+  {
+    "Index": 1,
+    "Title": "아이폰13 팝니다",
+    "Product": "아이폰13 스페이스그레이",
+    "Price": "400000",
+    "Image": "/images/iphone13sg.jpg",
+    "Explanation": "잔기스 없고 사용한지 1년 됬습니다."
+  }
+]
