@@ -75,9 +75,12 @@ const Btn1 = styled.button`
 	transition: all 0.4s;
 	cursor: pointer;
 
-	&:hover {
-			background: #1a1a1a;
-	}
+	&:disabled {
+		background-color: #dadada;
+		color: white;
+		cursor: not-allowed;
+		border: 1px;
+}
 `
 
 const NameBox = styled.div`
@@ -226,6 +229,7 @@ const SignUpContent = () => {
 	const [confirmPw, setConfirmPw] = useState('');
 	const [isSameID, setIsSameId] = useState();
 	const [data, setData] = useState('');
+	const [idEntered, setIdEntered] = useState(false);
 
 	// 입력 유효성 검사를 위한 변수들임
 	const [idValid, setIdValid] = useState(false);
@@ -246,6 +250,7 @@ const SignUpContent = () => {
 	const handleId = (e) => {
 		const newId = e.target.value;
 		setId(newId);
+		setIdEntered(newId.length > 0);
 		setIdValid(newId.length > 0);
 		updateButtonState(newId, name, pw, confirmPw);
 	}
@@ -323,6 +328,8 @@ const SignUpContent = () => {
 				data: {
 					id: 0,
 					name: id,
+					nick_name: "string",
+					authorization: "string"
 				}
 			})
 			alert('중복되는 아이디입니다.');
@@ -337,10 +344,6 @@ const SignUpContent = () => {
 	return (
 		<SignUpFrame>
 			<>
-				<Title>
-					<h2>계정만들기</h2>
-				</Title>
-
 				<Already>
 					<span>이미 계정이 있으신가요?</span>
 					<a href="/SignIn" style={LinkStyle}>로그인</a>
@@ -360,7 +363,7 @@ const SignUpContent = () => {
 					</Left>
 
 					<Right>
-						<Btn1 onClick={idCheck}>
+					<Btn1 onClick={idCheck} disabled={!idEntered}>
 							<span>중복확인</span>
 						</Btn1>
 					</Right>

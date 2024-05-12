@@ -77,38 +77,77 @@ const StyledInput = styled.input`
 `;
 
 const StyleButton = styled.button`
-  width: 400px;
-  height: 100px;
+  width: 200px;
+  height: 50px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
 `;
 
 const AuctionContent = () => {
 
-  const [image, setImage] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  
-  const fileUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-  
-    reader.onload = function (event) {
-      setImage(event.target.result);
-      setSelectedFile(file);
-    };
-  
-    reader.readAsDataURL(file);
+  const [files, setFiles] = useState([]);
+  const [title, setTitle] = useState('');
+  const [context, setContext] = useState('');
+  const [price, setPrice] = useState(0);
+  const [imgFile, setImgFile] = useState('');
+
+  const handleFileChange = async (e) => {
+    const selectedFiles = e.target.files;
+    setFiles(selectedFiles);
+    console.log(selectedFiles);
+
+    // Perform upload immediately after selecting files
+    await handleUpload(selectedFiles);
   };
 
-  const sendImage = async () => {
-    const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+'/api/writing', {
-      "data": {
-        "userid": "string",
-        "title": "string",
-        "text": "string",
-        "startprice": 0,
-        "picture": "string"
+  const handleUpload = async (selectedFiles) => {
+    const formData = new FormData();
+    console.log(formData);
+    for (let i = 0; i < selectedFiles.length; i++) {
+      formData.append('in_files', selectedFiles[i]);
+    }
+
+    try {
+      const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/upload-images', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setImgFile(response.data);
+      console.log('File upload success:', response.data);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  };
+
+  const writing = async () => {
+    const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/writing', {
+      data: {
+        userid: "string",
+        title: title,
+        text: context,
+        startprice: price,
+        picture: imgFile,
       }
     })
   };
+
+  const postTitle = (e) => {
+    setTitle(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const postContext = (e) => {
+    setContext(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const postPrice = (e) => {
+    setPrice(e.target.value);
+    console.log(e.target.value);
+  }
 
   return (
     <Container>
@@ -116,13 +155,29 @@ const AuctionContent = () => {
         <h1>기본정보</h1>
         <h3 style={{color:"red" , marginLeft:"3%"}}>*필수입력항목</h3>
       </SmallBox>
+      <SmallBox>
+        <SmallBoxL>
+          <h2>글제목</h2>
+        </SmallBoxL>
+        <SmallBoxR>
+          <StyledInput placeholder="글 제목을 입력하세요" onChange={postTitle}/>
+        </SmallBoxR>
+      </SmallBox>
+      <BigBox>
+        <BigBoxL>
+          <h2 style={{marginTop:"20%"}}>내용</h2>
+        </BigBoxL>
+        <BigBoxR>
+          <StyledInput style={{height: "80%"}} placeholder="내용을 입력하세요" onChange={postContext}/>
+        </BigBoxR>
+      </BigBox>
       <BigBox>
         <BigBoxL>
           <h2 style={{marginTop:"20%"}}>상품이미지(12)</h2>
         </BigBoxL>
         <BigBoxR>
-          <ImgFrame style={{ backgroundImage: `url(${image})` }}/>
-          <input type="file" accept="image/*" onChange={fileUpload} />
+          <ImgFrame/>
+          <input type="file" onChange={handleFileChange} multiple />
         </BigBoxR>
       </BigBox>
       <SmallBox>
@@ -143,13 +198,13 @@ const AuctionContent = () => {
       </BigBox>
       <SmallBox>
         <SmallBoxL>
-          <h2>가격</h2>
+          <h2>가격 설정</h2>
         </SmallBoxL>
         <SmallBoxR>
-          <StyledInput placeholder="흥정 시작가격을 입력하세요"/>
+          <StyledInput placeholder="흥정 시작가격을 입력하세요" onChange={postPrice}/>
         </SmallBoxR>
       </SmallBox>
-      <StyleButton onClick={sendImage}>제출하기</StyleButton>
+      <StyleButton onClick={writing}>제출하기</StyleButton>
     </Container>
   );
 };

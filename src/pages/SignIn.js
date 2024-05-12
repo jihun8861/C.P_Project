@@ -206,9 +206,17 @@ const SignInContent = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const REST_API_KEY = '369df2666853b0b05a21a4d65daa7261';
+    const REDIRECT_URI = 'http://localhost:3000/SignIn';
+    const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+    const loginHandler = () => {
+        window.location.href = link;
+      };
 
     const handleIdChange = (e) => {
         setId(e.target.value);
+        console.log(e.target.value);
         updateButtonState(e.target.value, pw);
     };
 
@@ -253,9 +261,6 @@ const SignInContent = () => {
     return (
         <SignInFrame>
             <>
-                <Title>
-                    <h2>로그인</h2>
-                </Title>
                 <IdBox>
                     <Input
                         type="text"
@@ -296,8 +301,8 @@ const SignInContent = () => {
                 <Bottom>
                     <h4>또는</h4>
                     <Kakao>
-                        <KakaoContent>
-                            <RiKakaoTalkFill style={{ width: "6%", height: "6%", marginRight: "10px" }}></RiKakaoTalkFill>카카오톡으로 로그인
+                        <KakaoContent onClick={loginHandler}>
+                            <RiKakaoTalkFill style={{ width: "6%", height: "6%", marginRight: "10px" }} ></RiKakaoTalkFill>카카오톡으로 로그인
                         </KakaoContent>
                     </Kakao>
                 </Bottom>

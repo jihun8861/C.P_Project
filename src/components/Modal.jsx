@@ -4,7 +4,10 @@ import { IoIosArrowBack } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
 import { FaCircleCheck } from "react-icons/fa6";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoIosLock } from "react-icons/io";
+import axios from "axios";
+
 // 모달이 열릴 때 애니메이션을 정의합니다.
 const slideInRight = keyframes`
     from {
@@ -237,7 +240,7 @@ const Modal1PwChangeBtn = styled.button`
   }
 `
 
-// 여기부터 모달2 디자인
+// 여기부터 모달 2 디자인
 const Modal2Title = styled.h1`
     font-size: 32px;
     padding-bottom: 10px;
@@ -255,7 +258,6 @@ const ModalMenuParent = styled.div`
 const Modal2Menu = styled.div`
     padding-top: 20px;
     display: flex;
-    align-items: flex-end;
     width: 100%;
     
     span{
@@ -272,12 +274,6 @@ const Modal2Menu = styled.div`
     }
   `
 
-const Modal2Line = styled.div`
-    margin-top: 25px;
-    border-bottom: solid 1px black;
-    width: 100%;
-  `
-
 const Modal2Title2 = styled.h3`
     margin-top: 25px;
     font-size: 30px;
@@ -291,6 +287,16 @@ const Modal2Menu2 = styled.h3`
     margin-bottom: 10px;
     color: #666666;
   `
+
+const Modal2TextBox = styled.input`
+    width: 100%;
+    height: 30%;
+    margin-top: 20px;
+    font-size: 24px;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-bottom: 50px;
+`
 
 const BtnSpace = styled.div`
     display: flex;
@@ -308,14 +314,13 @@ const Modal2CancelBtn = styled.button`
     background-color: lightsalmon;
     color: white;
     width: 50%;
-    height: 80%;
-    border-radius: 10px;
+    height: 70px;
+    border-radius: 15px;
     font-size: 20px;
     font-weight: bold;
     margin-right: 20px;
     border: none;
     cursor: pointer;
-    margin-top: 220px;
   `
 
 const Modal2Btn = styled.button`
@@ -325,13 +330,12 @@ const Modal2Btn = styled.button`
     background-color: red;
     color: white;
     width: 50%;
-    height: 80%;
-    border-radius: 10px;
+    height: 70px;
+    border-radius: 15px;
     font-size: 20px;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    margin-top: 220px;
 
     &:disabled {
       background-color: #dadada;
@@ -396,9 +400,12 @@ const Modal = ({ title, onClose, modalKey }) => {
     const [newPw, setNewPw] = useState('');
     const [confirmPw, setConfirmPw] = useState('');
     const [confirmPwValid, setConfirmPwValid] = useState(false);
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     const handleCurrentPwChange = (e) => {
       setCurrentPw(e.target.value);
+      console.log(e.target.value);
     };
 
     const handleNewPwChange = (e) => {
@@ -411,15 +418,24 @@ const Modal = ({ title, onClose, modalKey }) => {
       setConfirmPwValid(newConfirmPw === newPw);
     };
 
-    const handlePwChange = () => {
-      if(isPwValid){
-        alert("비빌번호가 변경되었습니다.")
+    const handlePwChange = async() => {
+      try{
+        const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/changing_password',{
+            "data": {
+              "user_password": currentPw,
+              "password": newPw,
+              "confirm_password": confirmPw,
+              "authorization": token,
+            }
+        })
+        alert("비밀번호 변경 완료");
+        navigate('/')
       }
-
-      else{
-        alert("당신은 뭔가 잘못했음.")
+      catch(error){
+        alert("비밀번호가 일치하지 않습니다.");
       }
     }
+
 
     // 새로운 비밀번호와 확인 값이 일치하는지 여부
     const isPwMatch = newPw === confirmPw;
@@ -479,6 +495,20 @@ const Modal = ({ title, onClose, modalKey }) => {
   };
 
   const Modal2 = () => {
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
+    const onDelete = async() => {
+      const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/' + 'api/users/delete_user',
+      {
+        data: {
+          authorization: token
+        }
+      })
+      alert("회원탈퇴 성공")
+      navigate("/")
+      localStorage.removeItem('token')
+    }
+
     return (
       <>
         <ModalMain>
@@ -531,7 +561,9 @@ const Modal = ({ title, onClose, modalKey }) => {
             </Modal2Menu>
           </ModalMenuParent>
 
-          <Modal2Line />
+          <Modal2TextBox>
+
+          </Modal2TextBox>
 
           <Modal2Title2>탈퇴 전 유의 사항</Modal2Title2>
           <Modal2Menu2>· 탈퇴 시, 회원 계정의 모든 정보는 삭제되며 재가입 시에도 복구되지 않습니다.</Modal2Menu2>
@@ -542,13 +574,7 @@ const Modal = ({ title, onClose, modalKey }) => {
             <Modal2CancelBtn onClick={() => { closeModal(); onClose(); }}>
               취소하기
             </Modal2CancelBtn>
-            <Modal2Btn disabled={!isAnyChecked}  onClick={() => {
-            if (isAnyChecked) {
-              alert('계정이 삭제되었습니다.');
-            } else {
-              alert('동의하지 않거나 비밀번호를 입력하지 않으면 삭제할 수 없습니다.');
-            }
-          }}>
+            <Modal2Btn disabled={!isAnyChecked}  onClick={onDelete}>
               탈퇴하기
             </Modal2Btn>
           </BtnSpace>
