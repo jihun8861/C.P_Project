@@ -1,59 +1,103 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FaHeart } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
+import { MdOutlineAccessTime } from "react-icons/md";
+import { IoCloseOutline } from "react-icons/io5";
 
+const slideInRight = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
 
 const Container = styled.div`
     width: 90%;
-    height: 100vh;
-    margin-top: 60px;
-`
+    height: auto;
+`;
+
+const Explain = styled.div`
+    width: 55%;
+    height: 10%;
+    margin-top: 10px;
+    padding: 40px 0px 40px 0px;
+`;
+
+const TitleLine = styled.hr`
+    width: 100%;
+    background: black;
+    height: 1px;
+    border: 0;
+    margin-bottom: 50px;
+`;
 
 const ItemContainer = styled.div`
     display: flex;
     flex-direction: row;
-    border: solid 1px;
     width: 100%;
-    height: 50%;
-`
+    height: 500px;
+`;
 
 const ImageFrame = styled.div`
     width: 45%;
     height: 100%;
-    border: solid 1px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: lightblue;
-`
+    border: solid 1px;
+`;
 
 const TextFrame = styled.div`
     width: 55%;
     height: 100%;
-    border: solid 1px;
     display: flex;
     flex-direction: column;
     padding: 20px 20px 0px 20px;
-`
+`;
 
-const Title = styled.div`
-    width:100%;
-    height: 10%;
-    display: flex;
-    margin-bottom: 20px;
-    font-size: 14px;
-`
+const Header = styled.div`
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+`;
+
+const PriceText = styled.div`
+  width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
 
 const Price = styled.div`
-    width: 100%;
-    height: 10%;
+    width: 40%;
+    height: 100%;
+    color: #114da5;
+    font-size: 30px;
+    font-weight: 600;
+`;
+
+const RemainTime = styled.div`
+    width: 40%;
+    height: 100%;
     display: flex;
-    font-size: 18px;
-`
+    align-items: center;
+    justify-content: center;
+    background-color: #114da5;
+    border: none;
+    color: white;
+`;
+
+const TimeIcon = styled(MdOutlineAccessTime)`
+  font-size: 20px;
+  margin-right: 5px;
+`;
 
 const Line = styled.hr`
     width: 100%;
@@ -62,7 +106,7 @@ const Line = styled.hr`
     background: #efefef;
     height: 1px;
     border: 0;
-`
+`;
 
 const InfoBox = styled.div`
     width: 100%;
@@ -77,7 +121,7 @@ const InfoBox = styled.div`
         color: #c0c0c0;
         margin-right: 20px;
     }
-`
+`;
 
 const HeartIcon = styled(FaHeart)`
     font-size: 20px;
@@ -99,51 +143,43 @@ const CateIcon = styled(BiSolidCategoryAlt)`
 
 const StatusBox = styled.div`
     width: 100%;
-    height: 20%;
+    height: 50%;
     display: flex;
     flex-direction: row;
     margin-top: 10px;
-`
+`;
 
 const Status = styled.div`
-    width: 15%;
+    width: 20%;
     height: 100%;
     color: #c0c0c0;
-    h4{
+    h3{
         padding-top: 5px;
     }
-`
+`;
 
 const StatusText = styled.div`
     width: 85%;
     height: 100%;
-    h4{
+    h3{
         padding-top: 5px;
     }
-`
-
-const Explain = styled.div`
-    width: 100%;
-    height: 10%;
-    margin-top: 10px;
-`
+`;
 
 const BtnSpace = styled.div`
     width: 100%;
     height: 20%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-`
+    align-items: end;
+`;
 
 const HeartBtn = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 30%;
-    height: 80%;
+    width: 33%;
+    height: 70%;
     cursor: pointer;
     background-color: #cccccc;
     color: white;
@@ -155,56 +191,126 @@ const HeartBtn = styled.button`
         font-weight: bold;
         margin-top: 1px;
     }
-`
+`;
 
 const Heart = styled(FaHeart)`
     font-size: 20px;
     margin-right: 5px;
-`
+`;
 
 const Btn = styled.button`
-    width: 30%;
-    height: 80%;
+    width: 33%;
+    height: 70%;
     margin-left: 20px;
     cursor: pointer;
     background-color: #ffa425;
     color: white;
     border: none;
     font-size: 12px;
-`
+`;
 
 const BuyBtn = styled.button`
-    width: 30%;
-    height: 80%;
+    width: 33%;
+    height: 70%;
     margin-left: 20px;
     cursor: pointer;
     background-color: #f70000;
     color: white;
     border: none;
     font-size: 12px;
-`
+`;
 
 const GraphContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 50%;
-    background-color: lightsalmon;
-    border: solid 1px;
+    height: 450px;
+`;
+
+// 여기부터 모달 디자인
+const ModalLayout = styled.div`
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 10001;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+`;
+
+const ModalContent = styled.div`
+    background-color: #ffffff;
+    width: 40%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    /* 모달이 열릴 때 애니메이션을 적용 */
+    animation: ${slideInRight} 0.3s ease-in-out; /* 애니메이션의 지속 시간을 조절 */
+`;
+
+const ModalHeader = styled.div`
+    width: 100%;
+    height: 8%;
+    background: #114da5;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
 `
+
+const ModalTitle = styled.div`
+    width: 95%;
+    height: 100%;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+`
+
+const ModalCloseBtn = styled(IoCloseOutline )`
+    width: 5%;
+    height: 100%;
+    background-color: #114da5;
+    color: white;
+    cursor: pointer;
+`
+
+const ModalMain = styled.div`
+    width: 100%;
+    height: 92%;
+    padding: 40px;
+`
+
+const MainTitle = styled.div`
+    width: 100%;
+    height: 10%;
+    border: solid 1px;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+`
+
 
 const BidContent = () => {
     const [totalHeartCount, setTotalHeartCount] = useState(0);
     const [heartCount, setHeartCount] = useState(0);
     const [isClicked, setIsClicked] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Sample data for the chart
     const [chartData, setChartData] = useState({
         series: [{
             name: 'Series 1',
-            data: [31, 40, 28, 51, 42, 109, 100]
+            data: [31, 40, 45, 51, 58, 109, 120]
         }],
         options: {
             chart: {
@@ -236,17 +342,27 @@ const BidContent = () => {
         },
     });
 
-    // 낙찰 종료 시간 계산
-    const endDate = new Date(currentTime);
-    endDate.setHours(endDate.getHours() + 24); // 예시로 현재 시간부터 24시간 이후로 설정합니다.
+    // 상품 등록 시간과 종료 시간 설정 (예시)
+    const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
+    const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
 
-    // 1초마다 현재 시간 갱신
+    // 남은 시간 계산
+    const calculateRemainingTime = () => {
+        const now = new Date();
+        const timeDifference = endDate - now;
+        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+        return `${hours}시간 ${minutes}분 ${seconds}초`;
+    };
+
+    // 1초마다 남은 시간 갱신
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date());
         }, 1000);
         return () => clearInterval(timer);
-    }, [currentTime]);
+    }, []);
 
     // 찜 버튼 클릭 이벤트 핸들러
     const handleHeartClick = () => {
@@ -262,21 +378,46 @@ const BidContent = () => {
         }
     };
 
+    const handleModalOpen = () => {
+        document.body.style.overflow = 'hidden';
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        document.body.style.overflow = 'auto';
+        setIsModalOpen(false);
+    };
+
     return (
         <>
             <Container>
+                <Explain>
+                    <h1> 0세대 해적왕 골드 D 로저의 칼</h1>
+                </Explain>
+
+                <TitleLine />
+
                 <ItemContainer>
                     <ImageFrame>
                         <h1>이미지</h1>
                     </ImageFrame>
 
                     <TextFrame>
-                        <Title>
-                            <h1>골드 D 로저의 낡은 검</h1>
-                        </Title>
-                        <Price>
-                            <h1>1,000,000원</h1>
-                        </Price>
+                        <Header>
+                            <PriceText>
+                                <h2>현재가</h2>
+                            </PriceText>
+
+                            <Price>
+                                <p>1,000,000원</p>
+                            </Price>
+
+                            <RemainTime>
+                                <TimeIcon />
+                                <p>남은시간 {calculateRemainingTime()}</p>
+                            </RemainTime>
+
+                        </Header>
 
                         <Line />
 
@@ -292,23 +433,24 @@ const BidContent = () => {
                             <ul>
                                 <CateIcon /> <p>해적</p>
                             </ul>
+
                         </InfoBox>
 
                         <StatusBox>
                             <Status>
-                                <h4>· 상품상태</h4>
-                                <h4>· 낙찰종료</h4>
+                                <h3>· 상품상태</h3>
+                                <h3>· 경매기간</h3>
+                                <h3>· 판매자 ID</h3>
+                                <h3>· 시작가</h3>
                             </Status>
 
                             <StatusText>
-                                <h4>존나 낡았음</h4>
-                                <h4>{endDate.toLocaleString()}</h4>
+                                <h3>존나 낡았음</h3>
+                                <h3>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</h3>
+                                <h3>골드 D 루피</h3>
+                                <h3>25,000원</h3>
                             </StatusText>
                         </StatusBox>
-
-                        <Explain>
-                            <h3>이 검은 0세대 제왕 골드 D 로저의 칼이다.</h3>
-                        </Explain>
 
                         <BtnSpace>
                             <HeartBtn onClick={handleHeartClick} style={{ backgroundColor: isClicked ? 'black' : '#cccccc' }}>
@@ -317,15 +459,33 @@ const BidContent = () => {
                                 <p>{heartCount}</p>
                             </HeartBtn>
 
-                            <Btn><h2>임시 버튼</h2></Btn>
-                            <BuyBtn><h2>구매</h2></BuyBtn>
+                            <Btn><h2>문의하기</h2></Btn>
+                            {isModalOpen && (
+                                <ModalLayout onClick={handleModalClose}>
+                                    <ModalContent onClick={(e) => e.stopPropagation()}>
+
+                                        <ModalHeader>
+                                            <ModalTitle>입찰하기</ModalTitle>
+                                            <ModalCloseBtn onClick={handleModalClose}>닫기</ModalCloseBtn>
+                                        </ModalHeader>
+
+
+                                        <ModalMain>
+                                            <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
+                                        </ModalMain>
+
+                                    </ModalContent>
+                                </ModalLayout>
+                            )}
+                            <BuyBtn onClick={handleModalOpen}><h2>입찰하기</h2></BuyBtn>
+
                         </BtnSpace>
 
                     </TextFrame>
                 </ItemContainer>
 
                 <GraphContainer>
-                <ReactApexCharts
+                    <ReactApexCharts
                         options={chartData.options}
                         series={chartData.series}
                         type="line"
@@ -337,10 +497,10 @@ const BidContent = () => {
             </Container>
         </>
     )
-}
+};
 
 const Bid = () => {
     return <Layout props={<BidContent />} />
-}
+};
 
 export default Bid;

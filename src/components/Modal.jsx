@@ -436,7 +436,6 @@ const Modal = ({ title, onClose, modalKey }) => {
       }
     }
 
-
     // 새로운 비밀번호와 확인 값이 일치하는지 여부
     const isPwMatch = newPw === confirmPw;
     // 현재 비밀번호, 새 비밀번호, 새 비밀번호 확인 값이 비어 있지 않고, 새 비번과 확인 값이 일치하는 경우 변경 가능
