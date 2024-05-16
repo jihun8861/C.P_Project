@@ -11,15 +11,23 @@ const KakaoRedirect = () => {
   useEffect(() => {
     const kakaoLogin = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_REDIRECT_URL}/?code=${code}`, {
-          headers: {
-            "Content-Type": "application/json;charset=utf-8",
+        if (!code) {
+          setError("인증 코드가 없습니다. 다시 시도해주세요.");
+          setLoading(false);
+          return;
+        }
+
+        console.log("인증 코드:", code);
+        const response = await axios.post(`${process.env.REACT_APP_BACK_END}`, {
+          data: {
+            "code": code,
           },
         });
 
-        const { token, account } = response.data;
+        console.log("백엔드 응답:", response.data);
+
+        const { token, account } = response.data.token;
         localStorage.setItem("token", token);
-        localStorage.setItem("name", account.kakaoName);
 
         // 로그인 성공 확인 로그
         console.log("로그인 성공:", { token, account });
@@ -27,18 +35,13 @@ const KakaoRedirect = () => {
         setLoading(false);
         navigate("/");
       } catch (error) {
-        console.error("Kakao login failed:", error);
+        console.error("Kakao login failed:", error.response ? error.response.data : error.message);
         setError("로그인에 실패했습니다. 다시 시도해주세요.");
         setLoading(false);
       }
     };
 
-    if (code) {
-      kakaoLogin();
-    } else {
-      setError("인증 코드가 없습니다. 다시 시도해주세요.");
-      setLoading(false);
-    }
+    kakaoLogin();
   }, [code, navigate]);
 
   if (loading) {

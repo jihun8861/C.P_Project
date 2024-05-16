@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Layout from "../components/Layout";
 import Modal from "../components/Modal";
+import axios from "axios";
 
 const Frame = styled.div`
     width: 100%;
@@ -363,6 +364,26 @@ const MyPageContent = () => {
     const [modalTitle, setModalTitle] = useState(""); // 모달 제목을 상태로 관리
     const [selectedMenu, setSelectedMenu] = useState(Entire);
     const [modalKey, setModalKey] = useState("");
+    const [userInfo, setUserInfo] = useState(null); // 유저 정보를 담을 상태
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const token = localStorage.getItem('token');
+          try {
+            const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/'+ '/api/users/my_page',
+            {
+              headers: {
+                Authorization: token
+              }
+            });
+            setUserInfo(response.data.data);
+          } catch (error) {
+            console.error('Error fetching user info:', error);
+          }
+        };
+    
+        fetchData(); // Call the async function
+      }, []); 
 
     useEffect(() => {
         if (isModalOpen) {
@@ -420,7 +441,7 @@ const MyPageContent = () => {
 
                 <RightInfoBox>
                     <RightBoxL>
-                        <LTitle>사용자 이름</LTitle>
+                        <LTitle>{userInfo.nickname}</LTitle>
 
                         <LExplain>
                             <p>거래를 한 후 신뢰지수를 높여보세요</p>

@@ -7,8 +7,18 @@ import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
+import { SiBitly } from "react-icons/si";
 
-const slideInRight = keyframes`
+const slideInAnimation = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
+const slideOutAnimation = keyframes`
   0% {
     opacity: 0;
   }
@@ -245,20 +255,24 @@ const ModalLayout = styled.div`
 
 const ModalContent = styled.div`
     background-color: #ffffff;
-    width: 40%;
+    width: 45%;
     height: 90%;
     display: flex;
     justify-content: center;
     flex-direction: column;
 
     /* 모달이 열릴 때 애니메이션을 적용 */
-    animation: ${slideInRight} 0.3s ease-in-out; /* 애니메이션의 지속 시간을 조절 */
+    animation: ${slideInAnimation} 0.3s ease-in-out; /* 애니메이션의 지속 시간을 조절 */
+
+    &.closing {
+        animation: ${slideOutAnimation} 0.3s ease-in-out; /* 닫힐 때 애니메이션 */
+    }
 `;
 
 const ModalHeader = styled.div`
     width: 100%;
     height: 8%;
-    background: #114da5;
+    background: lightsalmon;
     padding: 10px;
     display: flex;
     align-items: center;
@@ -274,15 +288,15 @@ const ModalTitle = styled.div`
     align-items: center;
 `
 
-const ModalCloseBtn = styled(IoCloseOutline )`
+const ModalCloseBtn = styled(IoCloseOutline)`
     width: 5%;
     height: 100%;
-    background-color: #114da5;
+    background-color: lightsalmon;
     color: white;
     cursor: pointer;
 `
 
-const ModalMain = styled.div`
+const ModalFrame = styled.div`
     width: 100%;
     height: 92%;
     padding: 40px;
@@ -291,13 +305,38 @@ const ModalMain = styled.div`
 const MainTitle = styled.div`
     width: 100%;
     height: 10%;
-    border: solid 1px;
+    border-bottom: solid 1px;
     font-size: 24px;
     font-weight: bold;
     display: flex;
     align-items: center;
+    color: #4d4d4d;
 `
 
+const ModalMain = styled.div`
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 8%
+`
+
+const ModalMainLeft = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f3f3;
+    width: 25%;
+    border-right: solid 1px #cecece;
+    border-bottom: solid 1px #cecece;
+`
+
+const ModalMainRight = styled.div`
+    display: flex;
+    align-items: center;
+    width: 75%;
+    border-bottom: solid 1px #cecece;
+    padding-left: 20px;
+`
 
 const BidContent = () => {
     const [totalHeartCount, setTotalHeartCount] = useState(0);
@@ -470,9 +509,13 @@ const BidContent = () => {
                                         </ModalHeader>
 
 
-                                        <ModalMain>
+                                        <ModalFrame>
                                             <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
-                                        </ModalMain>
+                                            <ModalMain>
+                                                <ModalMainLeft><h4>판매자</h4></ModalMainLeft>
+                                                <ModalMainRight><h4>몽키 D 루피</h4></ModalMainRight>
+                                            </ModalMain>
+                                        </ModalFrame>
 
                                     </ModalContent>
                                 </ModalLayout>
@@ -490,7 +533,7 @@ const BidContent = () => {
                         series={chartData.series}
                         type="line"
                         height={350}
-                        width={1000}
+                        width={1270}
                     />
                 </GraphContainer>
 
