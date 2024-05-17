@@ -300,6 +300,9 @@ const ModalFrame = styled.div`
     width: 100%;
     height: 92%;
     padding: 40px;
+    border: solid 1px;
+    display: flex;
+    flex-direction: column;
 `
 
 const MainTitle = styled.div`
@@ -317,7 +320,7 @@ const ModalMain = styled.div`
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 8%
+    height: 8%;
 `
 
 const ModalMainLeft = styled.div`
@@ -336,6 +339,25 @@ const ModalMainRight = styled.div`
     width: 75%;
     border-bottom: solid 1px #cecece;
     padding-left: 20px;
+`
+
+const ModalRemainTime = styled.div`
+    width: 27%;
+    height: 75%;
+    background-color: #114da5;
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 17px;
+`
+
+const ModalTextBox = styled.input`
+    width: 30%;
+    height: 75%;
+    display: flex;
+    
 `
 
 const BidContent = () => {
@@ -512,8 +534,32 @@ const BidContent = () => {
                                         <ModalFrame>
                                             <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
                                             <ModalMain>
-                                                <ModalMainLeft><h4>판매자</h4></ModalMainLeft>
-                                                <ModalMainRight><h4>몽키 D 루피</h4></ModalMainRight>
+                                                <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
+                                                <ModalMainRight><h3>몽키 D 루피</h3></ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
+                                                <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
+                                                <ModalMainRight>{endDate.toLocaleString()}까지
+                                                <ModalRemainTime>
+                                                {calculateRemainingTime()}
+                                                </ModalRemainTime>
+                                                </ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
+                                                <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
+                                                <ModalMainRight style={{color: '#114da5',fontWeight: 'bold'}}><h3>1,000,000원</h3></ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
+                                                <ModalMainLeft><h3>입찰금액</h3></ModalMainLeft>
+                                                <ModalMainRight><ModalTextBox/></ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
+                                                <ModalMainLeft><h3>신뢰도</h3></ModalMainLeft>
+                                                <ModalMainRight>게이지~</ModalMainRight>
                                             </ModalMain>
                                         </ModalFrame>
 

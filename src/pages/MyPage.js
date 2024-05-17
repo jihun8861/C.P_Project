@@ -359,31 +359,35 @@ const Clear = () => {
     );
 };
 
+
 const MyPageContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState(""); // 모달 제목을 상태로 관리
     const [selectedMenu, setSelectedMenu] = useState(Entire);
     const [modalKey, setModalKey] = useState("");
     const [userInfo, setUserInfo] = useState(null); // 유저 정보를 담을 상태
-
+    const [name, setName] = useState('')
     useEffect(() => {
         const fetchData = async () => {
-          const token = localStorage.getItem('token');
-          try {
-            const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/'+ '/api/users/my_page',
-            {
-              headers: {
-                Authorization: token
-              }
-            });
-            setUserInfo(response.data.data);
-          } catch (error) {
-            console.error('Error fetching user info:', error);
-          }
+            const token = localStorage.getItem('token');
+            try {
+                const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/my_page', {
+                    data: {
+                        authorization: token
+                    }
+                });
+                setUserInfo(response.data);
+                console.log(userInfo);
+                if (response.data && response.data.nick_name) {
+                    setName(response.data.nick_name);
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
         };
     
         fetchData(); // Call the async function
-      }, []); 
+    }, [name]); 
 
     useEffect(() => {
         if (isModalOpen) {
@@ -441,7 +445,7 @@ const MyPageContent = () => {
 
                 <RightInfoBox>
                     <RightBoxL>
-                        <LTitle>{userInfo.nickname}</LTitle>
+                        <LTitle>{name}</LTitle>
 
                         <LExplain>
                             <p>거래를 한 후 신뢰지수를 높여보세요</p>

@@ -26,9 +26,9 @@ const KakaoRedirect = () => {
 
         console.log("백엔드 응답:", response.data);
 
-        const { token, account } = response.data.token;
-        localStorage.setItem("token", token);
-
+        const { token, account } = response.data;
+        localStorage.setItem('token', token);
+        
         // 로그인 성공 확인 로그
         console.log("로그인 성공:", { token, account });
 
