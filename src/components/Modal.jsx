@@ -361,6 +361,7 @@ const SearchInput = styled.input`
     height: 100%;
     outline: none; /* 포커스 시 테두리 제거 */
     display: flex;
+    font-size: 18px;
   `;
 
 const SearchIconWrapper = styled.div`

@@ -10,15 +10,6 @@ const SignUpFrame = styled.div`
 	height: auto;
 `
 
-const Title = styled.div`
-	h2{
-		margin: 0;
-		margin-bottom: 30px;
-		font-size: 34px;
-		font-weight: bold;
-	}
-`
-
 const Already = styled.div`
 	margin: 0 0 14px;
 	height: auto;
@@ -146,6 +137,16 @@ const ErrorMessage = styled.h3`
 	margin-bottom: 10px;
 `
 
+const SuccessMessage = styled.h3`
+	color: #28a745;
+	font-size: 14px;
+	width: 100%;
+	box-sizing: border-box;
+	margin-top: -10px;
+	padding-left: 5px;
+	margin-bottom: 10px;
+`
+
 const PwOkBox = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -168,8 +169,8 @@ const PwOkBox = styled.div`
 
 const Input = styled.input`
 	width: 100%;
-	outline: none; // 이 녀석을 사용해야 외부 테두리가 안보임.
-	border: none; //이 녀석을 사용해야 내부 테두리가 안보임.
+	outline: none;
+	border: none;
 	height: 28px;
 	font-size: 16px;
 	background-color: #f6f6f6;
@@ -222,25 +223,23 @@ const LinkStyle = {
 }
 
 const SignUpContent = () => {
-	// 사용자 이름, 아이디, 비밀번호, 비밀번호 확인 변수 선언
 	const [name, setName] = useState('');
 	const [id, setId] = useState('');
 	const [pw, setPw] = useState('');
 	const [confirmPw, setConfirmPw] = useState('');
-	const [isSameID, setIsSameId] = useState();
-	const [data, setData] = useState('');
 	const [idEntered, setIdEntered] = useState(false);
+	const [isDuplicateChecked, setIsDuplicateChecked] = useState(false); // 중복 확인 상태
 
-	// 입력 유효성 검사를 위한 변수들임
 	const [idValid, setIdValid] = useState(false);
 	const [nameValid, setNameValid] = useState(false);
 	const [pwValid, setPwValid] = useState(false);
 	const [confirmPwValid, setConfirmPwValid] = useState(false);
 
-	// 전체 유효성 검사를 위한 변수임
+	const [idError, setIdError] = useState('');
+	const [idSuccess, setIdSuccess] = useState('');
+
 	const [notAllow, setNotAllow] = useState(true);
 
-	// 아이콘 클릭으로 인한 비밀번호 보이기 여부 상태
 	const [pwType, setPwType] = useState('password');
 
 	const [showPassword, setShowPassword] = useState(false);
@@ -252,6 +251,9 @@ const SignUpContent = () => {
 		setId(newId);
 		setIdEntered(newId.length > 0);
 		setIdValid(newId.length > 0);
+		setIsDuplicateChecked(false); // 아이디가 변경되면 중복 확인 상태를 초기화
+		setIdError('');
+		setIdSuccess('');
 		updateButtonState(newId, name, pw, confirmPw);
 	}
 
@@ -262,7 +264,6 @@ const SignUpContent = () => {
 		updateButtonState(id, newName, pw, confirmPw);
 	}
 
-	// 비밀번호 입력 핸들러임
 	const handlePw = (e) => {
 		const newPw = e.target.value;
 		setPw(newPw);
@@ -270,7 +271,6 @@ const SignUpContent = () => {
 		updateButtonState(id, name, newPw, confirmPw);
 	};
 
-	// 비밀번호 확인 입력 핸들러임
 	const handleConfirmPw = (e) => {
 		const newConfirmPw = e.target.value;
 		setConfirmPw(newConfirmPw);
@@ -278,34 +278,30 @@ const SignUpContent = () => {
 		updateButtonState(id, name, pw, newConfirmPw);
 	};
 
-	// 유효성을 갱신하는 함수임
 	const updateButtonState = (newId, newName, newPw, newConfirmPw) => {
 		setNotAllow(
 			!(
 				newId.length > 0 &&
 				newName.length > 0 &&
-				newPw.length > 0 &&
-				newPw.length <= 10 &&
-				newConfirmPw === newPw
+				newPw.length >= 4 &&
+				newPw === newConfirmPw &&
+				isDuplicateChecked // 중복 확인이 완료된 상태인지 체크
 			)
 		);
 	};
 
-	// 아이콘 클릭 핸들러
 	const handleEyeClick = () => {
 		setPwType(pwType === 'password' ? 'text' : 'password');
 		setShowPassword(!showPassword);
 	};
 
 	const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !notAllow) {
-            onClickSignUpBtn();
-        }
-      };    
+		if (e.key === 'Enter' && !notAllow) {
+			onClickSignUpBtn();
+		}
+	};
 
-	// 회원가입 버튼 클릭 핸들러임
 	const onClickSignUpBtn = () => {
-
 		if (!notAllow) {
 			alert('회원가입에 성공했습니다.');
 			axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/create', {
@@ -321,7 +317,6 @@ const SignUpContent = () => {
 		}
 	};
 
-
 	const idCheck = async () => {
 		try {
 			const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/check_duplicate', {
@@ -331,15 +326,28 @@ const SignUpContent = () => {
 					nick_name: "string",
 					authorization: "string"
 				}
-			})
-			alert('중복되는 아이디입니다.');
-			console.log("성공")
+			});
+	
+			if (response.data == null) {
+				setIdError('');
+				setIdSuccess('사용 가능한 아이디입니다.');
+				setIsDuplicateChecked(true);
+				updateButtonState(id, name, pw, confirmPw);
+				console.log("성공");
+			} else {
+				setIdError('이미 사용중인 아이디입니다.');
+				setIdSuccess('');
+				setIsDuplicateChecked(false);
+				console.log("실패");
+			}
+		} catch (error) {
+			setIdError('');
+			setIdSuccess('사용 가능한 아이디입니다.');
+			setIsDuplicateChecked(true);
+			updateButtonState(id, name, pw, confirmPw);
+			console.log("서버 오류 발생");
 		}
-		catch (error) {
-			alert('사용 가능한 아이디입니다.')
-			console.log("실패")
-		}
-	}
+	};
 
 	return (
 		<SignUpFrame>
@@ -359,11 +367,13 @@ const SignUpContent = () => {
 								onChange={handleId}
 								onKeyDown={handleKeyDown}
 							/>
+							{idError && <ErrorMessage>{idError}</ErrorMessage>}
+							{idSuccess && <SuccessMessage>{idSuccess}</SuccessMessage>}
 						</IdBox>
 					</Left>
 
 					<Right>
-					<Btn1 onClick={idCheck} disabled={!idEntered}>
+						<Btn1 onClick={idCheck} disabled={!idEntered}>
 							<span>중복확인</span>
 						</Btn1>
 					</Right>
@@ -379,7 +389,7 @@ const SignUpContent = () => {
 					/>
 				</NameBox>
 
-				<PwBox /*error={!pwValid && pw.length > 0}*/>
+				<PwBox>
 					<Input
 						type={showPassword ? 'text' : 'password'}
 						placeholder="암호를 입력해주세요"

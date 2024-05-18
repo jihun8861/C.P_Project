@@ -7,7 +7,6 @@ import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
-import { SiBitly } from "react-icons/si";
 
 const slideInAnimation = keyframes`
   0% {
@@ -113,7 +112,7 @@ const Line = styled.hr`
     width: 100%;
     margin-top: 20px;
     padding-right: 20px;
-    background: #efefef;
+    background: #cecece;
     height: 1px;
     border: 0;
 `;
@@ -262,7 +261,7 @@ const ModalContent = styled.div`
     flex-direction: column;
 
     /* 모달이 열릴 때 애니메이션을 적용 */
-    animation: ${slideInAnimation} 0.3s ease-in-out; /* 애니메이션의 지속 시간을 조절 */
+    animation: ${slideInAnimation} 0.4s ease-in-out; /* 애니메이션의 지속 시간을 조절 */
 
     &.closing {
         animation: ${slideOutAnimation} 0.3s ease-in-out; /* 닫힐 때 애니메이션 */
@@ -354,10 +353,44 @@ const ModalRemainTime = styled.div`
 `
 
 const ModalTextBox = styled.input`
-    width: 30%;
-    height: 75%;
+    width: 20%;
+    height: 60%;
+    font-size: 15px;
+    padding-left: 5px;
+    margin-right: 3px;
+
+    &:focus {
+        outline: none;
+        border: 2px solid #66afe9; /* 클릭 시 나타날 테두리 색과 두께를 설정 */
+        box-shadow: 0 0 2px #66afe9;
+    }
+`;
+
+const ModalBtnSpace = styled.div`
+    width: 100%;
+    height: 10%;
+    border: solid 1px;
     display: flex;
-    
+    align-items: center;
+    justify-content: center;
+`
+
+const ModalBidBtn = styled.button`
+    width: 15%;
+    height: 50%;
+    background-color: #114da5;
+    color: white;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+`
+
+const ModalCancelBtn = styled.button`
+    width: 10%;
+    height: 50%;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
 `
 
 const BidContent = () => {
@@ -366,6 +399,10 @@ const BidContent = () => {
     const [isClicked, setIsClicked] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // 상품 등록 시간과 종료 시간 설정 (예시)
+    const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
+    const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
 
     // Sample data for the chart
     const [chartData, setChartData] = useState({
@@ -402,10 +439,6 @@ const BidContent = () => {
             }
         },
     });
-
-    // 상품 등록 시간과 종료 시간 설정 (예시)
-    const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
-    const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
 
     // 남은 시간 계산
     const calculateRemainingTime = () => {
@@ -535,32 +568,39 @@ const BidContent = () => {
                                             <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
                                             <ModalMain>
                                                 <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
-                                                <ModalMainRight><h3>몽키 D 루피</h3></ModalMainRight>
+                                                <ModalMainRight><h4>몽키 D 루피</h4></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
-                                                <ModalMainRight>{endDate.toLocaleString()}까지
-                                                <ModalRemainTime>
-                                                {calculateRemainingTime()}
-                                                </ModalRemainTime>
+                                                <ModalMainRight><h4>{endDate.toLocaleString()}까지</h4>
+                                                    <ModalRemainTime>
+                                                        {calculateRemainingTime()}
+                                                    </ModalRemainTime>
                                                 </ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
-                                                <ModalMainRight style={{color: '#114da5',fontWeight: 'bold'}}><h3>1,000,000원</h3></ModalMainRight>
+                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>1,000,000원</h3></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>입찰금액</h3></ModalMainLeft>
-                                                <ModalMainRight><ModalTextBox/></ModalMainRight>
+                                                <ModalMainRight style={{color:'#114da5',fontWeight:'bold'}} >
+                                                    <ModalTextBox type="number"/>원
+                                                </ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>신뢰도</h3></ModalMainLeft>
-                                                <ModalMainRight>게이지~</ModalMainRight>
+                                                <ModalMainRight>이새기 믿으면 안됨</ModalMainRight>
                                             </ModalMain>
+
+                                            <ModalBtnSpace>
+                                                <ModalBidBtn>입찰하기</ModalBidBtn>
+                                                <ModalCancelBtn onClick={handleModalClose}>취소</ModalCancelBtn>
+                                            </ModalBtnSpace>
                                         </ModalFrame>
 
                                     </ModalContent>
