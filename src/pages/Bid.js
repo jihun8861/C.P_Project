@@ -129,23 +129,24 @@ const InfoBox = styled.div`
         font-weight: bold;
         color: #c0c0c0;
         margin-right: 20px;
+        font-size: 18px;
     }
 `;
 
 const HeartIcon = styled(FaHeart)`
-    font-size: 20px;
+    font-size: 24px;
     color: #c0c0c0;
     margin-right: 10px;
 `;
 
 const EyeIcon = styled(FaEye)`
-    font-size: 20px;
+    font-size: 24px;
     color: #c0c0c0;
     margin-right: 10px;
 `;
 
 const CateIcon = styled(BiSolidCategoryAlt)`
-    font-size: 20px;
+    font-size: 24px;
     color: #c0c0c0;
     margin-right: 10px;
 `;
@@ -155,7 +156,7 @@ const StatusBox = styled.div`
     height: 50%;
     display: flex;
     flex-direction: row;
-    margin-top: 10px;
+    margin-top: 20px;
 `;
 
 const Status = styled.div`
@@ -163,7 +164,7 @@ const Status = styled.div`
     height: 100%;
     color: #c0c0c0;
     h3{
-        padding-top: 5px;
+        padding-top: 15px;
     }
 `;
 
@@ -171,7 +172,7 @@ const StatusText = styled.div`
     width: 85%;
     height: 100%;
     h3{
-        padding-top: 5px;
+        padding-top: 15px;
     }
 `;
 
@@ -254,7 +255,7 @@ const ModalLayout = styled.div`
 
 const ModalContent = styled.div`
     background-color: #ffffff;
-    width: 45%;
+    width: 43%;
     height: 90%;
     display: flex;
     justify-content: center;
@@ -299,7 +300,6 @@ const ModalFrame = styled.div`
     width: 100%;
     height: 92%;
     padding: 40px;
-    border: solid 1px;
     display: flex;
     flex-direction: column;
 `
@@ -319,7 +319,7 @@ const ModalMain = styled.div`
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 8%;
+    height: 10%;
 `
 
 const ModalMainLeft = styled.div`
@@ -355,56 +355,78 @@ const ModalRemainTime = styled.div`
 const ModalTextBox = styled.input`
     width: 20%;
     height: 60%;
-    font-size: 15px;
+    font-size: 18px;
     padding-left: 5px;
-    margin-right: 3px;
+    align-items: center;
 
     &:focus {
         outline: none;
-        border: 2px solid #66afe9; /* 클릭 시 나타날 테두리 색과 두께를 설정 */
-        box-shadow: 0 0 2px #66afe9;
+        border: 2px solid #66afe9;
+        box-shadow: 0 0 5px #66afe9;
     }
 `;
 
 const ModalBtnSpace = styled.div`
     width: 100%;
     height: 10%;
-    border: solid 1px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 10px;
 `
 
 const ModalBidBtn = styled.button`
     width: 15%;
-    height: 50%;
+    height: 70%;
     background-color: #114da5;
     color: white;
     border: none;
     margin-right: 10px;
     cursor: pointer;
+    font-size:16px;
+
+    &:active {
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
 `
 
 const ModalCancelBtn = styled.button`
     width: 10%;
-    height: 50%;
-    border: none;
+    height: 70%;
+    border: solid 1px #e1e1e1;
     margin-left: 10px;
     cursor: pointer;
+    font-size:16px;
+
+    &:active { //버튼의 클릭감을 보이게 하기 위한 CSS
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+`
+
+const ModalBottom = styled.div`
+    width: 100%;
+    height: 37%;
+    padding: 20px;
+
+    span{
+        font-weight: bold;
+    }
 `
 
 const BidContent = () => {
-    const [totalHeartCount, setTotalHeartCount] = useState(0);
-    const [heartCount, setHeartCount] = useState(0);
-    const [isClicked, setIsClicked] = useState(false);
+    const [totalHeartCount, setTotalHeartCount] = useState(0); // 총 하트 카운트
+    const [heartCount, setHeartCount] = useState(0); // 한 사람이 누른 하트 카운트
+    const [isClicked, setIsClicked] = useState(false); // 클릭 처리하는 변수
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [bidAmount, setBidAmount] = useState(1000000); // 현재가
+    const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000); // 입찰금액
 
     // 상품 등록 시간과 종료 시간 설정 (예시)
     const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
     const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
 
-    // Sample data for the chart
+    // 임시 그래프 차트
     const [chartData, setChartData] = useState({
         series: [{
             name: 'Series 1',
@@ -430,7 +452,7 @@ const BidContent = () => {
             },
             grid: {
                 row: {
-                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                    colors: ['#f3f3f3', 'transparent'],
                     opacity: 0.5
                 },
             },
@@ -445,24 +467,14 @@ const BidContent = () => {
         const now = new Date();
         const timeDifference = endDate - now;
         const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+        const minutes = Math.floor((timeDifference % (1000 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
         return `${hours}시간 ${minutes}분 ${seconds}초`;
     };
 
-    // 1초마다 남은 시간 갱신
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
-
     // 찜 버튼 클릭 이벤트 핸들러
     const handleHeartClick = () => {
-        // 클릭 상태 변경
         setIsClicked(!isClicked);
-        // 클릭되었을 때만 총 하트 수와 개별 하트 수 증가 혹은 감소
         if (!isClicked) {
             setTotalHeartCount(totalHeartCount + 1);
             setHeartCount(heartCount + 1);
@@ -474,6 +486,8 @@ const BidContent = () => {
 
     const handleModalOpen = () => {
         document.body.style.overflow = 'hidden';
+        // Modal 열 때 입찰금액 초기화
+        setInputBidAmount(bidAmount + 1000);
         setIsModalOpen(true);
     };
 
@@ -482,11 +496,36 @@ const BidContent = () => {
         setIsModalOpen(false);
     };
 
+    const handleModalConfirm = () => {
+        if (inputBidAmount < bidAmount + 1000) {
+            alert(`입찰 가능 금액(${formatNumber(bidAmount + 1000)} 원)보다 적은 금액을 입력하셨습니다.`);
+            return;
+        }
+        if (window.confirm(`${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?\n\n-----------------------------------------------------\n신중하게 생각하신 후에 입찰하세요!\n입찰하신 금액은 취소하실 수 없습니다.\n`)) {
+            alert("입찰 완료!");
+            handleModalClose();
+            // 입찰금액을 현재가로 설정
+            setBidAmount(inputBidAmount);
+        }
+    };
+
+    const formatNumber = (number) => { // 금액 1000단윔마다 콤마를 표시해줌
+        return new Intl.NumberFormat('ko-KR').format(number);
+    };
+
+    // 1초마다 남은 시간 갱신
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <>
             <Container>
                 <Explain>
-                    <h1> 0세대 해적왕 골드 D 로저의 칼</h1>
+                    <h1>0세대 해적왕 골드 D 로저의 칼</h1>
                 </Explain>
 
                 <TitleLine />
@@ -503,7 +542,7 @@ const BidContent = () => {
                             </PriceText>
 
                             <Price>
-                                <p>1,000,000원</p>
+                                <p>{formatNumber(bidAmount)} 원</p>
                             </Price>
 
                             <RemainTime>
@@ -563,17 +602,16 @@ const BidContent = () => {
                                             <ModalCloseBtn onClick={handleModalClose}>닫기</ModalCloseBtn>
                                         </ModalHeader>
 
-
                                         <ModalFrame>
                                             <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
                                             <ModalMain>
                                                 <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
-                                                <ModalMainRight><h4>몽키 D 루피</h4></ModalMainRight>
+                                                <ModalMainRight><span>몽키 D 루피</span></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
-                                                <ModalMainRight><h4>{endDate.toLocaleString()}까지</h4>
+                                                <ModalMainRight><span>{endDate.toLocaleString()}까지</span>
                                                     <ModalRemainTime>
                                                         {calculateRemainingTime()}
                                                     </ModalRemainTime>
@@ -581,14 +619,22 @@ const BidContent = () => {
                                             </ModalMain>
 
                                             <ModalMain>
+                                                <ModalMainLeft><h3>입찰단위</h3></ModalMainLeft>
+                                                <ModalMainRight><span>1,000원</span></ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
                                                 <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
-                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>1,000,000원</h3></ModalMainRight>
+                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(bidAmount)}</h3></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>입찰금액</h3></ModalMainLeft>
-                                                <ModalMainRight style={{color:'#114da5',fontWeight:'bold'}} >
-                                                    <ModalTextBox type="number"/>원
+                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }} >
+                                                    <ModalTextBox type="number"
+                                                        value={inputBidAmount} 
+                                                        onChange={(e) => setInputBidAmount(parseInt(e.target.value) || 0)} />
+                                                    <span style={{ marginLeft: '7px',fontSize:'18px' }}>{formatNumber(inputBidAmount)} 원</span>
                                                 </ModalMainRight>
                                             </ModalMain>
 
@@ -598,9 +644,21 @@ const BidContent = () => {
                                             </ModalMain>
 
                                             <ModalBtnSpace>
-                                                <ModalBidBtn>입찰하기</ModalBidBtn>
+                                                <ModalBidBtn onClick={handleModalConfirm}>입찰하기</ModalBidBtn>
                                                 <ModalCancelBtn onClick={handleModalClose}>취소</ModalCancelBtn>
                                             </ModalBtnSpace>
+
+                                            <Line style={{ marginTop: '10px' }} />
+
+                                            <ModalBottom>
+                                                <h3>* 알려드립니다.</h3><br />
+                                                <span>입찰 실수 및 허위입찰</span>은 경매사고로 이어질 수 있으며, <span>미정산(미입금, 구매거부 등) 누적시</span> 비비드 이용 
+                                                제한이 발생될 수 있습니다.<br /><br />
+                                                비비드에 등록된 판매물품의 내용 및 판매진행은 <span>판매자의 전적인 책임</span>으로 이루어지며, 거래 및 결제와 관련된
+                                                모든 책임은 판매자와 구매자에게 있습니다.
+                                            </ModalBottom>
+                                            <Line style={{ marginTop: '10px' }} />
+
                                         </ModalFrame>
 
                                     </ModalContent>
@@ -625,11 +683,11 @@ const BidContent = () => {
 
             </Container>
         </>
-    )
+    );
 };
 
 const Bid = () => {
-    return <Layout props={<BidContent />} />
+    return <Layout props={<BidContent />} />;
 };
 
 export default Bid;

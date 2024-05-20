@@ -132,7 +132,7 @@ const ErrorMessage = styled.h3`
 	font-size: 14px;
 	width: 100%;
 	box-sizing: border-box;
-	margin-top: -10px;
+	margin-top: -15px;
 	padding-left: 5px;
 	margin-bottom: 10px;
 `
@@ -142,7 +142,7 @@ const SuccessMessage = styled.h3`
 	font-size: 14px;
 	width: 100%;
 	box-sizing: border-box;
-	margin-top: -10px;
+	margin-top: -15px;
 	padding-left: 5px;
 	margin-bottom: 10px;
 `
@@ -304,14 +304,14 @@ const SignUpContent = () => {
 	const onClickSignUpBtn = () => {
 		if (!notAllow) {
 			alert('회원가입에 성공했습니다.');
-			axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/create', {
+			axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/create', {
 				data: {
 					name: id,
 					password: pw,
 					nick_name: name
 				}
-			})
-			navigate('/SignIn')
+			});
+			navigate('/SignIn');
 		} else {
 			alert('회원가입 정보를 올바르게 입력해주세요.');
 		}
@@ -319,7 +319,7 @@ const SignUpContent = () => {
 
 	const idCheck = async () => {
 		try {
-			const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/check_duplicate', {
+			const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/check_duplicate', {
 				data: {
 					id: 0,
 					name: id,
@@ -333,19 +333,16 @@ const SignUpContent = () => {
 				setIdSuccess('사용 가능한 아이디입니다.');
 				setIsDuplicateChecked(true);
 				updateButtonState(id, name, pw, confirmPw);
-				console.log("성공");
 			} else {
 				setIdError('이미 사용중인 아이디입니다.');
 				setIdSuccess('');
 				setIsDuplicateChecked(false);
-				console.log("실패");
 			}
 		} catch (error) {
 			setIdError('');
 			setIdSuccess('사용 가능한 아이디입니다.');
 			setIsDuplicateChecked(true);
 			updateButtonState(id, name, pw, confirmPw);
-			console.log("서버 오류 발생");
 		}
 	};
 
@@ -366,10 +363,10 @@ const SignUpContent = () => {
 								value={id}
 								onChange={handleId}
 								onKeyDown={handleKeyDown}
-							/>
-							{idError && <ErrorMessage>{idError}</ErrorMessage>}
-							{idSuccess && <SuccessMessage>{idSuccess}</SuccessMessage>}
+							/>							
 						</IdBox>
+						{idError && <ErrorMessage>{idError}</ErrorMessage>}
+							{idSuccess && <SuccessMessage>{idSuccess}</SuccessMessage>}
 					</Left>
 
 					<Right>
