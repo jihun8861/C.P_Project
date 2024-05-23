@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
 import Layout from "../components/Layout";
 import styled, { keyframes } from "styled-components";
 import { FaHeart } from "react-icons/fa";
@@ -7,6 +8,7 @@ import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
+import axios from "axios";
 
 const slideInAnimation = keyframes`
   0% {
@@ -414,6 +416,8 @@ const ModalBottom = styled.div`
 `
 
 const BidContent = () => {
+    const location = useLocation();
+    const userInfo = { ...location.state};
     const [totalHeartCount, setTotalHeartCount] = useState(0); // 총 하트 카운트
     const [heartCount, setHeartCount] = useState(0); // 한 사람이 누른 하트 카운트
     const [isClicked, setIsClicked] = useState(false); // 클릭 처리하는 변수
@@ -425,7 +429,6 @@ const BidContent = () => {
     // 상품 등록 시간과 종료 시간 설정 (예시)
     const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
     const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
-
     // 임시 그래프 차트
     const [chartData, setChartData] = useState({
         series: [{
@@ -474,6 +477,7 @@ const BidContent = () => {
 
     // 찜 버튼 클릭 이벤트 핸들러
     const handleHeartClick = () => {
+        //const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+ '/')
         setIsClicked(!isClicked);
         if (!isClicked) {
             setTotalHeartCount(totalHeartCount + 1);
@@ -521,18 +525,34 @@ const BidContent = () => {
         return () => clearInterval(timer);
     }, []);
 
+    useEffect(()=> {
+        const hits = async () => {
+            try {
+                const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+ '/api/users/increase_view_count', {
+                    data: {
+                        "content_id" : userInfo.data.id
+                    }
+                   
+                });
+            } catch (error) {
+                console.log("실패")
+            }
+        };
+        hits();
+    },[])
+
     return (
         <>
             <Container>
                 <Explain>
-                    <h1>0세대 해적왕 골드 D 로저의 칼</h1>
+                    <h1>{userInfo.data.title}</h1>
                 </Explain>
 
                 <TitleLine />
 
                 <ItemContainer>
                     <ImageFrame>
-                        <h1>이미지</h1>
+                        <h1>{userInfo.data.picture}</h1>
                     </ImageFrame>
 
                     <TextFrame>
@@ -542,7 +562,7 @@ const BidContent = () => {
                             </PriceText>
 
                             <Price>
-                                <p>{formatNumber(bidAmount)} 원</p>
+                                <p>{formatNumber(userInfo.data.startprice)}원</p>
                             </Price>
 
                             <RemainTime>
@@ -560,7 +580,7 @@ const BidContent = () => {
                             </ul>
 
                             <ul>
-                                <EyeIcon /> <p>205</p>
+                                <EyeIcon /> <p>{userInfo.data.view_count}</p>
                             </ul>
 
                             <ul>
@@ -580,8 +600,8 @@ const BidContent = () => {
                             <StatusText>
                                 <h3>존나 낡았음</h3>
                                 <h3>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</h3>
-                                <h3>골드 D 루피</h3>
-                                <h3>25,000원</h3>
+                                <h3>{userInfo.data.userid}</h3>
+                                <h3>{userInfo.data.startprice}</h3>
                             </StatusText>
                         </StatusBox>
 

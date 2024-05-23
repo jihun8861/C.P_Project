@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Layout from "../components/Layout";
 import DropdownList from "../components/DropdownList";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 1300px;
@@ -83,6 +84,7 @@ const StyleButton = styled.button`
   font-weight: bold;
   font-size: 20px;
   margin-top: 20px;
+  cursor: pointer;
 `;
 
 const AuctionContent = () => {
@@ -92,17 +94,37 @@ const AuctionContent = () => {
   const [context, setContext] = useState('');
   const [price, setPrice] = useState(0);
   const [imgFile, setImgFile] = useState('');
-
+  const [imgUrl, setImgUrl] = useState('');
+  const navigate = useNavigate();
+  
   const handleFileChange = async (e) => {
     const selectedFiles = e.target.files;
     setFiles(selectedFiles);
     console.log(selectedFiles);
-
-    // Perform upload immediately after selecting files
     await handleUpload(selectedFiles);
   };
 
+  useEffect(() => {
+    return async() => {
+      removeImage();
+    };
+  },[]);
+
+  const removeImage = async() => {
+    if(localStorage.getItem('isWriting') !== null)
+    { 
+      const isWriting = localStorage.getItem('isWriting');
+      console.log(isWriting);
+      if(isWriting)
+      { 
+        console.log("사진 삭제 메소드 호출");
+        localStorage.removeItem('isWriting');
+      }
+    }
+  }
+
   const handleUpload = async (selectedFiles) => {
+    removeImage();
     const formData = new FormData();
     console.log(formData);
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -116,22 +138,28 @@ const AuctionContent = () => {
         },
       });
       setImgFile(response.data);
+      setImgUrl(response.data);
       console.log('File upload success:', response.data);
-    } catch (error) {
+      localStorage.setItem('isWriting', true)
+    } 
+    catch (error) {
       console.error('Error uploading files:', error);
+      alert('잘못된 접근입니다.')
     }
   };
 
   const writing = async () => {
     const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/writing', {
       data: {
-        userid: "string",
+        userid: "",
         title: title,
         text: context,
         startprice: price,
         picture: imgFile,
       }
     })
+    localStorage.removeItem('isWriting')
+    navigate('/');
   };
 
   const postTitle = (e) => {
@@ -176,18 +204,10 @@ const AuctionContent = () => {
           <h2 style={{marginTop:"20%"}}>상품이미지(12)</h2>
         </BigBoxL>
         <BigBoxR>
-          <ImgFrame/>
+          <ImgFrame imgUrl={imgUrl}/>
           <input type="file" onChange={handleFileChange} multiple />
         </BigBoxR>
       </BigBox>
-      <SmallBox>
-        <SmallBoxL>
-          <h2>상품명</h2>
-        </SmallBoxL>
-        <SmallBoxR>
-          <StyledInput placeholder="상품명을 입력해주세요"/>
-        </SmallBoxR>
-      </SmallBox>
       <BigBox>
         <BigBoxL>
          <h2 style={{marginTop:"20%"}}>카테고리</h2>

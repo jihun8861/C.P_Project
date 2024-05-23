@@ -1,20 +1,23 @@
 import React from "react";
 import styled from "styled-components";
+import { Link,useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 220px;
   height: 350px;
-  border: 1px solid lightgray;
+  border: 2px solid lightgray;
   background-color: #FAFAFA;
   img {
     width: 100%;
     height: 100%;
   }
+  cursor: pointer;
 `;
 
 const ImageFrame = styled.div`
   width: 100%;
   height: 200px;
+  border-bottom: 2px solid lightgray;
 `;
 
 const TextFrame = styled.div`
@@ -27,21 +30,32 @@ const TextFrame = styled.div`
   font-weight: bold;
 `;
 
-const ItemFrame = ( {Product, Price, Image} ) => {
-
+const ItemFrame = ( {Product, Price, Image,Array} ) => {
+  const navigate = useNavigate();
+  const handleDetailPost = () => {
+    console.log(Array)
+    navigate('/Bid', {
+      state: {
+        data: Array
+      },
+    });
+  };
+  const truncatedProduct = Product.length > 11 ? Product.substring(0, 11) + "..." : Product;
+  const formattedPrice = Price.toLocaleString();
+  console.log(Array)
   return (
     <Container>
-      <ImageFrame>
-        <img src={Image} />
+      <ImageFrame
+        onClick={() =>handleDetailPost(Array)}
+      >
+        <img src={Image}/>
+      
       </ImageFrame>
       <TextFrame style={{marginTop:"12%"}}>
-        {Product}
+        {truncatedProduct}
       </TextFrame>
       <TextFrame>
-        경매 시작가: {Price}
-      </TextFrame>
-      <TextFrame>
-        
+        시작가: {formattedPrice} 원
       </TextFrame>
     </Container>
   )
