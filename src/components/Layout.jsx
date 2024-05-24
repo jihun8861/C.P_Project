@@ -4,7 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 const Container = styled.div`
-  min-height: 100vh;
+  min-height: 65vh;
   display: flex;
   flex-direction: column;
   align-items: center;

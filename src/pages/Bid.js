@@ -491,7 +491,7 @@ const BidContent = () => {
     const handleModalOpen = () => {
         document.body.style.overflow = 'hidden';
         // Modal 열 때 입찰금액 초기화
-        setInputBidAmount(bidAmount + 1000);
+        setInputBidAmount(userInfo.data.startprice + 1000);
         setIsModalOpen(true);
     };
 
@@ -501,8 +501,8 @@ const BidContent = () => {
     };
 
     const handleModalConfirm = () => {
-        if (inputBidAmount < bidAmount + 1000) {
-            alert(`입찰 가능 금액(${formatNumber(bidAmount + 1000)} 원)보다 적은 금액을 입력하셨습니다.`);
+        if (inputBidAmount < userInfo.data.startprice + 1000) {
+            alert(`입찰 가능 금액(${formatNumber(userInfo.data.startprice + 1000)} 원)보다 적은 금액을 입력하셨습니다.`);
             return;
         }
         if (window.confirm(`${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?\n\n-----------------------------------------------------\n신중하게 생각하신 후에 입찰하세요!\n입찰하신 금액은 취소하실 수 없습니다.\n`)) {
@@ -552,7 +552,7 @@ const BidContent = () => {
 
                 <ItemContainer>
                     <ImageFrame>
-                        <h1>{userInfo.data.picture}</h1>
+                        <h1>이미지</h1>
                     </ImageFrame>
 
                     <TextFrame>
@@ -645,7 +645,7 @@ const BidContent = () => {
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
-                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(bidAmount)}</h3></ModalMainRight>
+                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(userInfo.data.startprice)}</h3></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>

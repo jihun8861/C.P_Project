@@ -6,7 +6,7 @@
 
     const Frame = styled.div`
         width: 100%;
-        height: 100vh;
+        height: 65vh;
         display: flex;
         flex-direction: row;
         margin-top: 7%;
@@ -15,7 +15,7 @@
     //여기부터 왼쪽 박스의 내용
     const LeftBox = styled.div`
         width: 15%;
-        height: 100%;
+        height: 500px;
         display: flex;
         flex-direction: column;
         margin-top: 30px;
@@ -53,7 +53,7 @@
     //여기부터 오른쪽 박스의 내용
     const RightBox = styled.div`
         width: 85%;
-        height: 100%;
+        height: 800px;
         display: flex;
         flex-direction: column;
         margin-left: 50px;
@@ -261,7 +261,7 @@
 
     const RightProduct = styled.div`
         width: 100%;
-        height: 30%;
+        height: auto;
         h2 {
             padding: 10px;
         }
@@ -329,32 +329,26 @@
         background: linear-gradient(to right, #FFACFC, #B76CFD);
     `;
 
-    const Hello = styled.div`
-        display: flex;
-        align-items: center;
-        margin-top: 30px;
-    `;
-
-    const Entire = () => {
+    const ChoiceList = () => {
         return (
             <>
-                <Hello>찜한목록</Hello>
+                찜한목록
             </>
         );
     };
 
-    const Sell = () => {
+    const BidList = () => {
         return (
             <>
-                <Hello>판매중</Hello>
+                입찰목록
             </>
         );
     };
 
-    const Clear = () => {
+    const SellList = () => {
         return (
             <>
-                <Hello>판매완료</Hello>
+                판매중
             </>
         );
     };
@@ -363,7 +357,7 @@
     const MyPageContent = () => {
         const [isModalOpen, setIsModalOpen] = useState(false);
         const [modalTitle, setModalTitle] = useState(""); // 모달 제목을 상태로 관리
-        const [selectedMenu, setSelectedMenu] = useState(Entire);
+        const [selectedMenu, setSelectedMenu] = useState(ChoiceList);
         const [modalKey, setModalKey] = useState("");
         const [userInfo, setUserInfo] = useState(null); // 유저 정보를 담을 상태
         const [name, setName] = useState('')
@@ -503,16 +497,16 @@
                     <RightProduct>
                         <h2>내 상품</h2>
                         <ProductMenu>
-                            <ProductMenuItem1 onClick={() => handleProductMenuClick(Entire)}>
+                            <ProductMenuItem1 onClick={() => handleProductMenuClick(ChoiceList)}>
                                 찜
                             </ProductMenuItem1>
                                 
-                            <ProductMenuItem2 onClick={() => handleProductMenuClick(Sell)}>
-                                판매중
+                            <ProductMenuItem2 onClick={() => handleProductMenuClick(BidList)}>
+                                입찰중
                             </ProductMenuItem2>
 
-                            <ProductMenuItem3 onClick={() => handleProductMenuClick(Clear)}>
-                                판매완료
+                            <ProductMenuItem3 onClick={() => handleProductMenuClick(SellList)}>
+                                판매중
                             </ProductMenuItem3>
                         </ProductMenu>
                         <ProductBox>{selectedMenu}</ProductBox>

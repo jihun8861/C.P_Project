@@ -197,7 +197,7 @@ const Header = () => {
               </Link>
 
               <Link to="/Bid" style={LinkStyle}>
-                <h2>입찰페이지</h2>
+                <h2>무슨페이지</h2>
               </Link>
 
               <h2 onClick={enterMypage} style={{marginRight:"5%" , cursor:"pointer"}}>마이페이지</h2>
