@@ -8,6 +8,7 @@ import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
+import Swal from 'sweetalert2';
 import axios from "axios";
 
 const slideInAnimation = keyframes`
@@ -95,7 +96,7 @@ const Price = styled.div`
 `;
 
 const RemainTime = styled.div`
-    width: 40%;
+    width: 35%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -245,7 +246,7 @@ const ModalLayout = styled.div`
     width: 100%;
     height: 100%;
     position: fixed;
-    z-index: 10001;
+    z-index: 11;
     top: 0;
     right: 0;
     display: flex;
@@ -343,7 +344,7 @@ const ModalMainRight = styled.div`
 `
 
 const ModalRemainTime = styled.div`
-    width: 27%;
+    width: 33%;
     height: 75%;
     background-color: #114da5;
     margin-left: 15px;
@@ -425,10 +426,12 @@ const BidContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [bidAmount, setBidAmount] = useState(1000000); // 현재가
     const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000); // 입찰금액
+    const startTime = new Date(userInfo.data.start_time);
+    const formattedStartTime = startTime.toLocaleString(); // 시작시간의 형식을 맞추기 위해 사용
 
-    // 상품 등록 시간과 종료 시간 설정 (예시)
-    const startDate = new Date('2024-05-23T02:04:53'); // 등록 시간
-    const endDate = new Date('2024-05-24T02:04:53'); // 종료 시간
+    // Set the end date to be 2 days after the start time
+    const endDate = new Date(startTime.getTime() + 5 * 24 * 60 * 60 * 1000); // 숫자를 바꿔 남은 일수를 변경가능
+
     // 임시 그래프 차트
     const [chartData, setChartData] = useState({
         series: [{
@@ -465,19 +468,22 @@ const BidContent = () => {
         },
     });
 
-    // 남은 시간 계산
+    // Calculate remaining time
     const calculateRemainingTime = () => {
         const now = new Date();
         const timeDifference = endDate - now;
+        if (timeDifference <= 0) {
+            return { isEnded: true, timeString: "입찰종료" };
+        }
+        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDifference % (1000 * 60)) / (1000 * 60));
+        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-        return `${hours}시간 ${minutes}분 ${seconds}초`;
+        return { isEnded: false, timeString: `${days}일 ${hours}시간 ${minutes}분 ${seconds}초` };
     };
 
     // 찜 버튼 클릭 이벤트 핸들러
     const handleHeartClick = () => {
-        //const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+ '/')
         setIsClicked(!isClicked);
         if (!isClicked) {
             setTotalHeartCount(totalHeartCount + 1);
@@ -502,18 +508,39 @@ const BidContent = () => {
 
     const handleModalConfirm = () => {
         if (inputBidAmount < userInfo.data.startprice + 1000) {
-            alert(`입찰 가능 금액(${formatNumber(userInfo.data.startprice + 1000)} 원)보다 적은 금액을 입력하셨습니다.`);
+            Swal.fire({
+                icon: 'error',
+                title: '입찰 금액 오류',
+                text: `입찰 가능 금액(${formatNumber(userInfo.data.startprice + 1000)} 원)보다 적은 금액을 입력하셨습니다.`,
+                confirmButtonText: '확인'
+            });
             return;
         }
-        if (window.confirm(`${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?\n\n-----------------------------------------------------\n신중하게 생각하신 후에 입찰하세요!\n입찰하신 금액은 취소하실 수 없습니다.\n`)) {
-            alert("입찰 완료!");
-            handleModalClose();
-            // 입찰금액을 현재가로 설정
-            setBidAmount(inputBidAmount);
-        }
+        Swal.fire({
+            title: `${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?`,
+            text: "신중하게 생각하신 후에 입찰하세요! 입찰하신 금액은 취소하실 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '입찰하기',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '입찰 완료',
+                    text: `${formatNumber(inputBidAmount)}원의 금액에 입찰이 완료되었습니다!`,
+                    confirmButtonText: '확인'
+                });
+                handleModalClose();
+                // 입찰금액을 현재가로 설정
+                setBidAmount(inputBidAmount);
+            }
+        });
     };
 
-    const formatNumber = (number) => { // 금액 1000단윔마다 콤마를 표시해줌
+    const formatNumber = (number) => {
         return new Intl.NumberFormat('ko-KR').format(number);
     };
 
@@ -525,21 +552,22 @@ const BidContent = () => {
         return () => clearInterval(timer);
     }, []);
 
-    useEffect(()=> {
+    useEffect(() => {
         const hits = async () => {
             try {
                 const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+ '/api/users/increase_view_count', {
                     data: {
-                        "content_id" : userInfo.data.id
+                        "content_id": userInfo.data.id
                     }
-                   
                 });
             } catch (error) {
-                console.log("실패")
+                console.log("실패");
             }
         };
         hits();
-    },[])
+    }, [userInfo.data.id]);
+
+    const remainingTime = calculateRemainingTime();
 
     return (
         <>
@@ -566,10 +594,9 @@ const BidContent = () => {
                             </Price>
 
                             <RemainTime>
-                                <TimeIcon />
-                                <p>남은시간 {calculateRemainingTime()}</p>
+                                {!remainingTime.isEnded && <TimeIcon />}
+                                <p>{remainingTime.timeString}</p>
                             </RemainTime>
-
                         </Header>
 
                         <Line />
@@ -590,18 +617,18 @@ const BidContent = () => {
                         </InfoBox>
 
                         <StatusBox>
-                            <Status>
-                                <h3>· 상품상태</h3>
+                            <Status>                    
                                 <h3>· 경매기간</h3>
                                 <h3>· 판매자 ID</h3>
                                 <h3>· 시작가</h3>
+                                <h3>· 상품설명</h3>
                             </Status>
 
-                            <StatusText>
-                                <h3>존나 낡았음</h3>
-                                <h3>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</h3>
-                                <h3>{userInfo.data.userid}</h3>
-                                <h3>{userInfo.data.startprice}</h3>
+                            <StatusText>                        
+                                <h3>{formattedStartTime} ~ {endDate.toLocaleString()}</h3>
+                                <h3>몽키 D 루피</h3> {/*{userInfo.data.userid}*/}
+                                <h3>{formatNumber(userInfo.data.startprice)}</h3>
+                                <h3>{userInfo.data.text}</h3>
                             </StatusText>
                         </StatusBox>
 
@@ -630,11 +657,22 @@ const BidContent = () => {
                                             </ModalMain>
 
                                             <ModalMain>
+                                                <ModalMainLeft><h3>시작가</h3></ModalMainLeft>
+                                                <ModalMainRight><span>{formatNumber(userInfo.data.startprice)} 원</span></ModalMainRight>
+                                            </ModalMain>
+
+                                            <ModalMain>
                                                 <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
-                                                <ModalMainRight><span>{endDate.toLocaleString()}까지</span>
-                                                    <ModalRemainTime>
-                                                        {calculateRemainingTime()}
-                                                    </ModalRemainTime>
+                                                <ModalMainRight>
+                                                    {remainingTime.isEnded 
+                                                        ? <span>입찰종료</span> 
+                                                        : <>
+                                                            <span>{endDate.toLocaleString()}까지</span>
+                                                            <ModalRemainTime>
+                                                                {remainingTime.timeString}
+                                                            </ModalRemainTime>
+                                                        </>
+                                                    }
                                                 </ModalMainRight>
                                             </ModalMain>
 
@@ -659,8 +697,8 @@ const BidContent = () => {
                                             </ModalMain>
 
                                             <ModalMain>
-                                                <ModalMainLeft><h3>신뢰도</h3></ModalMainLeft>
-                                                <ModalMainRight>이새기 믿으면 안됨</ModalMainRight>
+                                                <ModalMainLeft><h3>거래횟수</h3></ModalMainLeft>
+                                                <ModalMainRight>4회 (판매: 1회, 구매: 3회)</ModalMainRight>
                                             </ModalMain>
 
                                             <ModalBtnSpace>

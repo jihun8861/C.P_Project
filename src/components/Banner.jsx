@@ -1,30 +1,33 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 
 const Container = styled.div`
   width: 100%;
-  height: 350px;
-  display: flex;
-  flex-direction: column;
+  height: 250px;
   margin-top: 3%;
   background-color: lightsalmon;
+  background-image: ${({ backgroundImage }) => `url(${backgroundImage})`};
+  background-size: 100% 100%;
+  background-position: center;
+  position: relative;
 `;
 
 const ArrowFrame = styled.div`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   width: 100%;
-  height: 330px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
 `;
 
 const InputFrame = styled.div`
+  position: absolute;
+  bottom: 10px;
   width: 100%;
-  height: 20px;
   display: flex;
-  align-items: center;
   justify-content: center;
 `;
 
@@ -37,69 +40,59 @@ const LinkStyle = {
 const CustomRadio = styled.input`
   margin: 0% 5px 3% 5px;
   background-color: red;
-  /* 원하는 CSS를 여기에 추가하세요 */
 `;
 
-const RadioStyle = {
-  margin: "0% 5px 3% 5px",
-  backgroundColor: "red",
-};
-
 const Banner = () => {
-
   const [count, setCount] = useState(0);
 
   const prevBanner = () => {
-    if(count == 0) {
-      return setCount(3);
-      
+    if (count === 0) {
+      setCount(bannerImg.length - 1);
+    } else {
+      setCount(count - 1);
     }
-    else {
-      setCount(count -1);
-    }
-  }
+  };
 
   const nextBanner = () => {
-    if(count == 3) {
+    if (count === bannerImg.length - 1) {
       setCount(0);
-    }
-    else {
+    } else {
       setCount(count + 1);
     }
-  }
+  };
 
   const bannerImg = [
-    {index: 0, color:"gray"}, {index: 1, src:"salmon"} , {index: 2, src:"green"} , {index: 3, src:"lightblue"}
+    { index: 0, src: "/images/b1.png" },
+    { index: 1, src: "/images/b2.png" },
+    { index: 2, src: "/images/b3.png" },
   ];
 
   useEffect(() => {
     const autoBanner = setInterval(() => {
       nextBanner();
     }, 4000);
-    return () => clearInterval(autoBanner); 
+    return () => clearInterval(autoBanner);
   }, [count]);
 
   return (
-    <Container style={{backgroundColor:bannerImg[count].src}}>
- 
+    <Container backgroundImage={bannerImg[count].src}>
       <ArrowFrame>
         <IoIosArrowBack style={LinkStyle} onClick={prevBanner} />
         <IoIosArrowForward style={LinkStyle} onClick={nextBanner} />
       </ArrowFrame>
-  
+
       <InputFrame>
-        {bannerImg.map((item, banner) => (
+        {bannerImg.map((item) => (
           <CustomRadio
-            key={banner}
+            key={item.index}
             type="radio"
-            style={RadioStyle}
             checked={count === item.index}
             onChange={() => setCount(item.index)}
           />
         ))}
       </InputFrame>
     </Container>
-  )
-}
+  );
+};
 
 export default Banner;

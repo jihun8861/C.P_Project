@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { FaUserLarge } from "react-icons/fa6";
+import { RiCustomerService2Fill } from "react-icons/ri";
+import { MdOutlineAttachMoney } from "react-icons/md";
+import { IoSearch } from "react-icons/io5";
 
 const Container = styled.div`
   width: 100%;
-  height: 20vh;
+  height: 18vh;
   position: sticky;
   z-index: 10;
   top: 0;
@@ -12,11 +16,12 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid #dadee5;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const Frame = styled.div`
-  width: 1400px;
+  width: 1200px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -31,14 +36,15 @@ const SiteMap = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-
   ul {
-    margin: 0% 2% 0% 2%;
-  }
-
-  a {
+    margin-left: 0px;
+    height: 40px;
+    width: 135px;
+    text-decoration: none;
+    color: black;
     display: flex;
-    width: 10%;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -54,7 +60,8 @@ const Title = styled.div`
 `;
 
 const TitleLeft = styled.div`
-  width: 70%;
+  width: 65%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -67,12 +74,16 @@ const TitleLeft = styled.div`
     width: 230px;
     display: flex;
     align-items: center;
-    justity-content: center;
+    justify-content: center;
+
   }
 
   h1 {
-    font-size: 45px;
+    font-size: 40px;
     color: salmon;
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
   }
 
   img {
@@ -82,23 +93,44 @@ const TitleLeft = styled.div`
 `;
 
 const TitleRight = styled.div`
-  width: 30%;
+  width: 35%;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-around;
   h2 {
     font-size: 20px;
-    margin: 0% 2% 0% 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
+const InputFrame = styled.div`
+  width: 65%;
+  height: 40%;
+  border: 2px solid salmon;
+  display: flex;
+  align-items: center;
+`;
+
 const StyleInput = styled.input`
-  width: 70%;
-  margin-left: 2%;
+  width: 90%;
+  height: 100%;
   padding: 1% 0% 1% 1%;
   font-size: 20px;
-  border: 2px solid salmon;
-  background-color: rgb(247,247,247)
+  background-color: rgb(247,247,247);
+  border: none;
+`;
+
+const IconBox = styled.div`
+  width: 10%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(247,247,247);
+  cursor: pointer;
 `;
 
 const LinkStyle = {
@@ -106,26 +138,7 @@ const LinkStyle = {
   color: "black",
   margin: "0px",
   padding: "0px",
-  display: "flex",
 }
-
-const NavBarContainer = styled.div`
-  width: 100%;
-  height: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-direction: row;
-  background-color: white;
-`;
-
-const NavBarItem = styled.div`
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 const Header = () => {
 
@@ -153,6 +166,7 @@ const Header = () => {
   const enterMypage = () => {
     if (token) {
       return (
+        alert('마이페이지로 이동됨'),
         navigate('/MyPage')
       )
     }
@@ -164,7 +178,50 @@ const Header = () => {
     }
   }
 
-  const categoryList = ["중고경매" , "핫템" , "이벤트" , "커뮤니티" , "고객지원"]
+  const enterAuction = () => {
+    if (token) {
+      return (
+        alert('경매올리기로 이동됨'),
+        navigate('/Auction')
+      )
+    }
+    else {
+      return (
+        alert('로그인을 해주세요'),
+        navigate('/SignIn')
+      )
+    }
+  }
+
+  const enterCustomerSupport = () => {
+    if (token) {
+      return (
+        alert('고객지원으로 이동됨'),
+        navigate('/CustomerSupport')
+      )
+    }
+    else {
+      return (
+        alert('로그인을 해주세요'),
+        navigate('/SignIn')
+      )
+    }
+  }
+
+  const [SearchProduct, setSearchProduct] = useState('');
+
+  const productNameChange = ( e ) => {
+    return (
+      console.log(e.target.value),
+      setSearchProduct(e.target.value)
+    )
+  };
+
+  const sendProduct = () => {
+    if (SearchProduct.trim()) {
+      navigate('/SearchResult', { state: { query: SearchProduct } });
+    }
+  };
 
   return (
     <>
@@ -172,48 +229,37 @@ const Header = () => {
         <Frame>
           <SiteMap>
             {isLoggedIn ? (
-              <Link to="/" style={LinkStyle}>
-                <ul onClick={handleLogout}>로그아웃</ul>
+              <Link to="/" style={{textDecoration:"none"}}>
+                <ul onClick={handleLogout} style={{paddingLeft:"50%", textDecoration:"none"}}>로그아웃</ul>
               </Link>
               ) : ( 
-              <Link to="/SignIn" style={LinkStyle}>
-              <ul>로그인 / 회원가입</ul>
+              <Link to="/SignIn" style={{textDecoration:"none"}}>
+                <ul>로그인 / 회원가입</ul>
               </Link>
               )}
-
-              <ul>고객센터</ul>
+              <Link to="/" style={{textDecoration:"none"}}>
+                <ul>고객센터</ul>
+              </Link>
           </SiteMap>
           <Title>
             <TitleLeft>
               <Link to="/" style={LinkStyle}>
-                  <img src="/images/BebidIcon.png" />
+                  <img src="/images/BebidIcon.png" style={{width:"45px", height: "60px", paddingBottom:"5px"}}/>
                   <h1>BE BID</h1>
               </Link>
-              <StyleInput placeholder="검색어를 입력해주세요"/>
+              <InputFrame>
+                <StyleInput placeholder="검색어를 입력해주세요" onChange={productNameChange}/>
+                <IconBox>
+                  <IoSearch style={{width:"20px", height: "30px"}} onClick={sendProduct}/>
+                </IconBox>
+              </InputFrame>
             </TitleLeft>
             <TitleRight>
-              <Link to="/Auction" style={LinkStyle}>
-                <h2>경매올리기</h2>
-              </Link>
-
-              <Link to="/Bid" style={LinkStyle}>
-                <h2>무슨페이지</h2>
-              </Link>
-
-              <h2 onClick={enterMypage} style={{marginRight:"5%" , cursor:"pointer"}}>마이페이지</h2>
+              <h2 onClick={enterAuction} style={{marginRight:"10px" , cursor:"pointer"}}><MdOutlineAttachMoney style={{width:"26px", height:"26px"}} />경매올리기</h2>
+              <h2 onClick={enterMypage} style={{marginRight:"10px" , cursor:"pointer"}}><FaUserLarge />마이페이지</h2>
+              <h2 onClick={enterCustomerSupport} style={{marginRight:"10px" , cursor:"pointer"}}><RiCustomerService2Fill style={{width:"26px", height:"26px"}}/>고객지원</h2>
             </TitleRight>
           </Title>
-          <NavBarContainer>
-            {/* {categoryList.map((item) => {
-              <NavBarItem onMouseEnter={AddedMenuOpen} onMouseLeave={AddedMenuClose}>중고거래</NavBarItem>
-            })} */}
-            <NavBarItem>중고거래</NavBarItem>
-            <NavBarItem>핫 템!</NavBarItem>
-            <NavBarItem>이벤트</NavBarItem>
-            <NavBarItem>커뮤니티</NavBarItem>
-            <NavBarItem>고객지원</NavBarItem>
-            <NavBarItem>카테고리</NavBarItem>
-          </NavBarContainer>
         </Frame>
       </Container>
     </>

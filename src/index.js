@@ -11,11 +11,14 @@ import Test2 from './pages/Test2';
 import Bid from './pages/Bid';
 import KakaoRedirect from './pages/KakaoRedirect';
 import reportWebVitals from './reportWebVitals';
+import CustomerSupport from './pages/CustomerSupport';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <BrowserRouter>
+    <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/SignIn" element={<SignIn />} />
@@ -26,6 +29,7 @@ root.render(
         <Route path="/Test2" element={<Test2 />} />
         <Route path="/Bid" element={<Bid />} />
         <Route path="/KakaoRedirect" element={<KakaoRedirect />} />
+        <Route path="/CustomerSupport" element={<CustomerSupport />} />
       </Routes>
     </BrowserRouter>
 );

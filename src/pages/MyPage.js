@@ -15,10 +15,10 @@
     //여기부터 왼쪽 박스의 내용
     const LeftBox = styled.div`
         width: 15%;
-        height: 500px;
+        height: 100%;
         display: flex;
         flex-direction: column;
-        margin-top: 30px;
+        border: solid 1px;
         p {
         padding-bottom: 30px;
         font-size: 23px;
@@ -53,19 +53,21 @@
     //여기부터 오른쪽 박스의 내용
     const RightBox = styled.div`
         width: 85%;
-        height: 800px;
+        height: 100%;
         display: flex;
         flex-direction: column;
         margin-left: 50px;
+        border: solid 1px;
     `;
 
     const RightInfoBox = styled.div`
         width: 100%;
-        height: 30%;
+        height: 45%;
         padding: 20px;
         display: flex;
         flex-direction: row;
         margin-bottom: 100px;
+        border: solid 1px;
     `;
 
     //오른쪽 박스의 왼쪽 내용(사용자 이름, 횟수)
@@ -134,7 +136,7 @@
         margin-right: 10px;
     `
 
-    //오른쪽 박스 오른쪽 디자인(신뢰지수, 출석)
+    //오른쪽 박스 오른쪽 디자인(거래횟수, 출석)
     const RightBoxR = styled.div`
         width: 50%;
         height: 100%;
@@ -411,7 +413,7 @@
         };
 
         const exp = 100;
-        const ratio = parseInt(60); // parseInt((exp % 100) * 100 / 100); <-- 원본
+        const ratio = parseInt(3); // parseInt((exp % 100) * 100 / 100); <-- 원본
 
         return (
             <Frame>
@@ -442,7 +444,7 @@
                             <LTitle>{name}</LTitle>
 
                             <LExplain>
-                                <p>거래를 한 후 신뢰지수를 높여보세요</p>
+                                <p>거래를 한 후 거래횟수를 높여보세요</p>
                             </LExplain>
 
                             <LTransactionBox>
@@ -466,7 +468,7 @@
                                 <RBoxL>
                                     <RBoxTop>
                                         <RBoxTopL>
-                                            <h2>신뢰지수</h2>
+                                            <h2>거래횟수</h2>
                                             <h2>{ratio}</h2>
                                         </RBoxTopL>
                                         <RBoxTopR>

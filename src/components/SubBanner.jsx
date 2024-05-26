@@ -3,9 +3,11 @@ import styled from "styled-components";
 
 const Container = styled.div`
   width: 100%;
-  height: 350px;
+  height: 250px;
   margin-top: 3%;
   background-image: url("/SubBanner.png");
+  background-size: 100% 100%; 
+  background-position: center;
 `;
 
 const SubBanner = () => {
