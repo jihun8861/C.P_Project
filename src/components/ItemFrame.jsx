@@ -40,7 +40,7 @@ const ItemFrame = ( {Product, Price, Image,Array} ) => {
       },
     });
   };
-  const truncatedProduct = Product.length > 11 ? Product.substring(0, 11) + "..." : Product;
+  const truncatedProduct = Product.length > 11 ? Product.substring(0, 8) + "..." : Product;
   const formattedPrice = Price.toLocaleString();
   console.log(Array)
   return (
@@ -48,7 +48,8 @@ const ItemFrame = ( {Product, Price, Image,Array} ) => {
       <ImageFrame
         onClick={() =>handleDetailPost(Array)}
       >
-        <img src={Image}/>
+        {console.log(Image)}
+        <img src={Image} alt={"로딩중"} />
       
       </ImageFrame>
       <TextFrame style={{marginTop:"12%"}}>

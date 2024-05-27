@@ -9,7 +9,7 @@ import DailyModal from "../components/DailyModal";
 import { ImTelegram } from "react-icons/im";
 
 const Container = styled.div`
-  width: 1400px;
+  width: 1200px;
   height: 100%;
   display: flex;
   justify-content: flex-start;
@@ -18,7 +18,7 @@ const Container = styled.div`
 `;
 
 const Frame = styled.div`
-  width: 1400px;
+  width: 1200px;
   height: 400px;
   display: flex;
   align-items: center;

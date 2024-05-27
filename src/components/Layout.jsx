@@ -4,7 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 const Container = styled.div`
-  min-height: 65vh;
+  min-height: 66vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,7 +13,8 @@ const Container = styled.div`
 `;
 
 const Main = styled.div`
-  width: 1400px;
+  max-width: 1920px;
+  min-width: 1200px;
   height: auto;
   background-color: white;
   display: flex;
@@ -27,12 +28,12 @@ const Layout = ( {props} ) => {
   return (
     <>
     <Container>
-      <Header />
-      <Main>
+      <Header /> {/* 18vh */}
+      <Main>  {/* 57vh */}
       {props}
       </Main>
     </Container>
-      <Footer />
+      <Footer />  {/* 25vh */}
     </>
   );
 };

@@ -9,6 +9,7 @@ import ReactApexCharts from 'react-apexcharts';
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
 import Swal from 'sweetalert2';
+import { format } from 'date-fns';
 import axios from "axios";
 
 const slideInAnimation = keyframes`
@@ -417,335 +418,336 @@ const ModalBottom = styled.div`
 `
 
 const BidContent = () => {
-    const location = useLocation();
-    const userInfo = { ...location.state};
-    const [totalHeartCount, setTotalHeartCount] = useState(0); // 총 하트 카운트
-    const [heartCount, setHeartCount] = useState(0); // 한 사람이 누른 하트 카운트
-    const [isClicked, setIsClicked] = useState(false); // 클릭 처리하는 변수
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [bidAmount, setBidAmount] = useState(1000000); // 현재가
-    const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000); // 입찰금액
-    const startTime = new Date(userInfo.data.start_time);
-    const formattedStartTime = startTime.toLocaleString(); // 시작시간의 형식을 맞추기 위해 사용
+  const location = useLocation();
+  const userInfo = { ...location.state };
+  const [totalHeartCount, setTotalHeartCount] = useState(0); // 총 하트 카운트
+  const [heartCount, setHeartCount] = useState(0); // 한 사람이 누른 하트 카운트
+  const [isClicked, setIsClicked] = useState(false); // 클릭 처리하는 변수
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bidAmount, setBidAmount] = useState(1000000); // 현재가
+  const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000); // 입찰금액
+  const startTime = new Date(userInfo.data.start_time);
+  const formattedStartTime = format(startTime, 'yyyy/MM/dd HH:mm'); // 시작시간의 형식을 맞추기 위해 사용
 
-    // Set the end date to be 2 days after the start time
-    const endDate = new Date(startTime.getTime() + 5 * 24 * 60 * 60 * 1000); // 숫자를 바꿔 남은 일수를 변경가능
+  // Set the end date to be 2 days after the start time
+  const endDate = new Date(startTime.getTime() + 8 * 24 * 60 * 60 * 1000); // 숫자를 바꿔 남은 일수를 변경가능
+  const formattedEndTime = format(endDate, 'yyyy/MM/dd HH:mm');
 
-    // 임시 그래프 차트
-    const [chartData, setChartData] = useState({
-        series: [{
-            name: 'Series 1',
-            data: [31, 40, 45, 51, 58, 109, 120]
-        }],
-        options: {
-            chart: {
-                height: 350,
-                type: 'line',
-                zoom: {
-                    enabled: false
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'straight'
-            },
-            title: {
-                text: 'Sample Chart',
-                align: 'left'
-            },
-            grid: {
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
-                },
-            },
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            }
-        },
-    });
+  // 임시 그래프 차트
+  const [chartData, setChartData] = useState({
+      series: [{
+          name: 'Series 1',
+          data: [31, 40, 45, 51, 58, 109, 120]
+      }],
+      options: {
+          chart: {
+              height: 350,
+              type: 'line',
+              zoom: {
+                  enabled: false
+              }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          stroke: {
+              curve: 'straight'
+          },
+          title: {
+              text: 'Sample Chart',
+              align: 'left'
+          },
+          grid: {
+              row: {
+                  colors: ['#f3f3f3', 'transparent'],
+                  opacity: 0.5
+              },
+          },
+          xaxis: {
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          }
+      },
+  });
 
-    // Calculate remaining time
-    const calculateRemainingTime = () => {
-        const now = new Date();
-        const timeDifference = endDate - now;
-        if (timeDifference <= 0) {
-            return { isEnded: true, timeString: "입찰종료" };
-        }
-        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-        return { isEnded: false, timeString: `${days}일 ${hours}시간 ${minutes}분 ${seconds}초` };
-    };
+  // Calculate remaining time
+  const calculateRemainingTime = () => {
+      const now = new Date();
+      const timeDifference = endDate - now;
+      if (timeDifference <= 0) {
+          return { isEnded: true, timeString: "입찰종료" };
+      }
+      const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+      return { isEnded: false, timeString: `${days}일 ${hours}시간 ${minutes}분 ${seconds}초` };
+  };
 
-    // 찜 버튼 클릭 이벤트 핸들러
-    const handleHeartClick = () => {
-        setIsClicked(!isClicked);
-        if (!isClicked) {
-            setTotalHeartCount(totalHeartCount + 1);
-            setHeartCount(heartCount + 1);
-        } else {
-            setTotalHeartCount(totalHeartCount - 1);
-            setHeartCount(heartCount - 1);
-        }
-    };
+  // 찜 버튼 클릭 이벤트 핸들러
+  const handleHeartClick = () => {
+      setIsClicked(!isClicked);
+      if (!isClicked) {
+          setTotalHeartCount(totalHeartCount + 1);
+          setHeartCount(heartCount + 1);
+      } else {
+          setTotalHeartCount(totalHeartCount - 1);
+          setHeartCount(heartCount - 1);
+      }
+  };
 
-    const handleModalOpen = () => {
-        document.body.style.overflow = 'hidden';
-        // Modal 열 때 입찰금액 초기화
-        setInputBidAmount(userInfo.data.startprice + 1000);
-        setIsModalOpen(true);
-    };
+  const handleModalOpen = () => {
+      document.body.style.overflow = 'hidden';
+      // Modal 열 때 입찰금액 초기화
+      setInputBidAmount(userInfo.data.startprice + 1000);
+      setIsModalOpen(true);
+  };
 
-    const handleModalClose = () => {
-        document.body.style.overflow = 'auto';
-        setIsModalOpen(false);
-    };
+  const handleModalClose = () => {
+      document.body.style.overflow = 'auto';
+      setIsModalOpen(false);
+  };
 
-    const handleModalConfirm = () => {
-        if (inputBidAmount < userInfo.data.startprice + 1000) {
-            Swal.fire({
-                icon: 'error',
-                title: '입찰 금액 오류',
-                text: `입찰 가능 금액(${formatNumber(userInfo.data.startprice + 1000)} 원)보다 적은 금액을 입력하셨습니다.`,
-                confirmButtonText: '확인'
-            });
-            return;
-        }
-        Swal.fire({
-            title: `${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?`,
-            text: "신중하게 생각하신 후에 입찰하세요! 입찰하신 금액은 취소하실 수 없습니다.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '입찰하기',
-            cancelButtonText: '취소'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '입찰 완료',
-                    text: `${formatNumber(inputBidAmount)}원의 금액에 입찰이 완료되었습니다!`,
-                    confirmButtonText: '확인'
-                });
-                handleModalClose();
-                // 입찰금액을 현재가로 설정
-                setBidAmount(inputBidAmount);
-            }
-        });
-    };
+  const handleModalConfirm = () => {
+      if (inputBidAmount < userInfo.data.startprice + 1000) {
+          Swal.fire({
+              icon: 'error',
+              title: '입찰 금액 오류',
+              text: `입찰 가능 금액(${formatNumber(userInfo.data.startprice + 1000)} 원)보다 적은 금액을 입력하셨습니다.`,
+              confirmButtonText: '확인'
+          });
+          return;
+      }
+      Swal.fire({
+          title: `${formatNumber(inputBidAmount)} 원의 금액에 입찰하시겠습니까?`,
+          text: "신중하게 생각하신 후에 입찰하세요! 입찰하신 금액은 취소하실 수 없습니다.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '입찰하기',
+          cancelButtonText: '취소'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              Swal.fire({
+                  icon: 'success',
+                  title: '입찰 완료',
+                  text: `${formatNumber(inputBidAmount)}원의 금액에 입찰이 완료되었습니다!`,
+                  confirmButtonText: '확인'
+              });
+              handleModalClose();
+              // 입찰금액을 현재가로 설정
+              setBidAmount(inputBidAmount);
+          }
+      });
+  };
 
-    const formatNumber = (number) => {
-        return new Intl.NumberFormat('ko-KR').format(number);
-    };
+  const formatNumber = (number) => {
+      return new Intl.NumberFormat('ko-KR').format(number);
+  };
 
-    // 1초마다 남은 시간 갱신
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
+  // 1초마다 남은 시간 갱신
+  useEffect(() => {
+      const timer = setInterval(() => {
+          setCurrentTime(new Date());
+      }, 1000);
+      return () => clearInterval(timer);
+  }, []);
 
-    useEffect(() => {
-        const hits = async () => {
-            try {
-                const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app'+ '/api/users/increase_view_count', {
-                    data: {
-                        "content_id": userInfo.data.id
-                    }
-                });
-            } catch (error) {
-                console.log("실패");
-            }
-        };
-        hits();
-    }, [userInfo.data.id]);
+  useEffect(() => {
+      const hits = async () => {
+          try {
+              const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/increase_view_count', {
+                  data: {
+                      "content_id": userInfo.data.id
+                  }
+              });
+          } catch (error) {
+              console.log("실패");
+          }
+      };
+      hits();
+  }, [userInfo.data.id]);
 
-    const remainingTime = calculateRemainingTime();
+  const remainingTime = calculateRemainingTime();
 
-    return (
-        <>
-            <Container>
-                <Explain>
-                    <h1>{userInfo.data.title}</h1>
-                </Explain>
+  return (
+      <>
+          <Container>
+              <Explain>
+                  <h1>{userInfo.data.title}</h1>
+              </Explain>
 
-                <TitleLine />
+              <TitleLine />
 
-                <ItemContainer>
-                    <ImageFrame>
-                        <h1>이미지</h1>
-                    </ImageFrame>
+              <ItemContainer>
+                  <ImageFrame>
+                      <h1>이미지</h1>
+                  </ImageFrame>
 
-                    <TextFrame>
-                        <Header>
-                            <PriceText>
-                                <h2>현재가</h2>
-                            </PriceText>
+                  <TextFrame>
+                      <Header>
+                          <PriceText>
+                              <h2>현재가</h2>
+                          </PriceText>
 
-                            <Price>
-                                <p>{formatNumber(userInfo.data.startprice)}원</p>
-                            </Price>
+                          <Price>
+                              <p>{formatNumber(userInfo.data.startprice)}원</p>
+                          </Price>
 
-                            <RemainTime>
-                                {!remainingTime.isEnded && <TimeIcon />}
-                                <p>{remainingTime.timeString}</p>
-                            </RemainTime>
-                        </Header>
+                          <RemainTime>
+                              {!remainingTime.isEnded && <TimeIcon />}
+                              <p>{remainingTime.timeString}</p>
+                          </RemainTime>
+                      </Header>
 
-                        <Line />
+                      <Line />
 
-                        <InfoBox>
-                            <ul>
-                                <HeartIcon /> <p>{heartCount}</p>
-                            </ul>
+                      <InfoBox>
+                          <ul>
+                              <HeartIcon /> <p>{heartCount}</p>
+                          </ul>
 
-                            <ul>
-                                <EyeIcon /> <p>{userInfo.data.view_count}</p>
-                            </ul>
+                          <ul>
+                              <EyeIcon /> <p>{userInfo.data.view_count}</p>
+                          </ul>
 
-                            <ul>
-                                <CateIcon /> <p>해적</p>
-                            </ul>
+                          <ul>
+                              <CateIcon /> <p>해적</p>
+                          </ul>
 
-                        </InfoBox>
+                      </InfoBox>
 
-                        <StatusBox>
-                            <Status>                    
-                                <h3>· 경매기간</h3>
-                                <h3>· 판매자 ID</h3>
-                                <h3>· 시작가</h3>
-                                <h3>· 상품설명</h3>
-                            </Status>
+                      <StatusBox>
+                          <Status>
+                              <h3>· 경매기간</h3>
+                              <h3>· 판매자 ID</h3>
+                              <h3>· 시작가</h3>
+                              <h3>· 상품설명</h3>
+                          </Status>
 
-                            <StatusText>                        
-                                <h3>{formattedStartTime} ~ {endDate.toLocaleString()}</h3>
-                                <h3>몽키 D 루피</h3> {/*{userInfo.data.userid}*/}
-                                <h3>{formatNumber(userInfo.data.startprice)}</h3>
-                                <h3>{userInfo.data.text}</h3>
-                            </StatusText>
-                        </StatusBox>
+                          <StatusText>
+                              <h3>{formattedStartTime} ~ {formattedEndTime}</h3>
+                              <h3>몽키 D 루피</h3> {/*{userInfo.data.userid}*/}
+                              <h3>{formatNumber(userInfo.data.startprice)}</h3>
+                              <h3>{userInfo.data.text}</h3>
+                          </StatusText>
+                      </StatusBox>
 
-                        <BtnSpace>
-                            <HeartBtn onClick={handleHeartClick} style={{ backgroundColor: isClicked ? 'black' : '#cccccc' }}>
-                                <Heart style={{ color: isClicked ? 'red' : '#ffffff' }} />
-                                <h2>찜</h2>
-                                <p>{heartCount}</p>
-                            </HeartBtn>
+                      <BtnSpace>
+                          <HeartBtn onClick={handleHeartClick} style={{ backgroundColor: isClicked ? 'black' : '#cccccc' }}>
+                              <Heart style={{ color: isClicked ? 'red' : '#ffffff' }} />
+                              <h2>찜</h2>
+                              <p>{heartCount}</p>
+                          </HeartBtn>
 
-                            <Btn><h2>문의하기</h2></Btn>
-                            {isModalOpen && (
-                                <ModalLayout onClick={handleModalClose}>
-                                    <ModalContent onClick={(e) => e.stopPropagation()}>
+                          <Btn><h2>문의하기</h2></Btn>
+                          {isModalOpen && (
+                              <ModalLayout onClick={handleModalClose}>
+                                  <ModalContent onClick={(e) => e.stopPropagation()}>
 
-                                        <ModalHeader>
-                                            <ModalTitle>입찰하기</ModalTitle>
-                                            <ModalCloseBtn onClick={handleModalClose}>닫기</ModalCloseBtn>
-                                        </ModalHeader>
+                                      <ModalHeader>
+                                          <ModalTitle>입찰하기</ModalTitle>
+                                          <ModalCloseBtn onClick={handleModalClose}>닫기</ModalCloseBtn>
+                                      </ModalHeader>
 
-                                        <ModalFrame>
-                                            <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
-                                                <ModalMainRight><span>몽키 D 루피</span></ModalMainRight>
-                                            </ModalMain>
+                                      <ModalFrame>
+                                          <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
+                                              <ModalMainRight><span>몽키 D 루피</span></ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>시작가</h3></ModalMainLeft>
-                                                <ModalMainRight><span>{formatNumber(userInfo.data.startprice)} 원</span></ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>시작가</h3></ModalMainLeft>
+                                              <ModalMainRight><span>{formatNumber(userInfo.data.startprice)} 원</span></ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
-                                                <ModalMainRight>
-                                                    {remainingTime.isEnded 
-                                                        ? <span>입찰종료</span> 
-                                                        : <>
-                                                            <span>{endDate.toLocaleString()}까지</span>
-                                                            <ModalRemainTime>
-                                                                {remainingTime.timeString}
-                                                            </ModalRemainTime>
-                                                        </>
-                                                    }
-                                                </ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>남은시간</h3></ModalMainLeft>
+                                              <ModalMainRight>
+                                                  {remainingTime.isEnded
+                                                      ? <span>입찰종료</span>
+                                                      : <>
+                                                          <span>{formattedEndTime}까지</span>
+                                                          <ModalRemainTime>
+                                                              {remainingTime.timeString}
+                                                          </ModalRemainTime>
+                                                      </>
+                                                  }
+                                              </ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>입찰단위</h3></ModalMainLeft>
-                                                <ModalMainRight><span>1,000원</span></ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>입찰단위</h3></ModalMainLeft>
+                                              <ModalMainRight><span>1,000원</span></ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
-                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(userInfo.data.startprice)}</h3></ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
+                                              <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(userInfo.data.startprice)}</h3></ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>입찰금액</h3></ModalMainLeft>
-                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }} >
-                                                    <ModalTextBox type="number"
-                                                        value={inputBidAmount} 
-                                                        onChange={(e) => setInputBidAmount(parseInt(e.target.value) || 0)} />
-                                                    <span style={{ marginLeft: '7px',fontSize:'18px' }}>{formatNumber(inputBidAmount)} 원</span>
-                                                </ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>입찰금액</h3></ModalMainLeft>
+                                              <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }} >
+                                                  <ModalTextBox type="number"
+                                                      value={inputBidAmount}
+                                                      onChange={(e) => setInputBidAmount(parseInt(e.target.value) || 0)} />
+                                                  <span style={{ marginLeft: '7px', fontSize: '18px' }}>{formatNumber(inputBidAmount)} 원</span>
+                                              </ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalMain>
-                                                <ModalMainLeft><h3>거래횟수</h3></ModalMainLeft>
-                                                <ModalMainRight>4회 (판매: 1회, 구매: 3회)</ModalMainRight>
-                                            </ModalMain>
+                                          <ModalMain>
+                                              <ModalMainLeft><h3>거래횟수</h3></ModalMainLeft>
+                                              <ModalMainRight>4회 (판매: 1회, 구매: 3회)</ModalMainRight>
+                                          </ModalMain>
 
-                                            <ModalBtnSpace>
-                                                <ModalBidBtn onClick={handleModalConfirm}>입찰하기</ModalBidBtn>
-                                                <ModalCancelBtn onClick={handleModalClose}>취소</ModalCancelBtn>
-                                            </ModalBtnSpace>
+                                          <ModalBtnSpace>
+                                              <ModalBidBtn onClick={handleModalConfirm}>입찰하기</ModalBidBtn>
+                                              <ModalCancelBtn onClick={handleModalClose}>취소</ModalCancelBtn>
+                                          </ModalBtnSpace>
 
-                                            <Line style={{ marginTop: '10px' }} />
+                                          <Line style={{ marginTop: '10px' }} />
 
-                                            <ModalBottom>
-                                                <h3>* 알려드립니다.</h3><br />
-                                                <span>입찰 실수 및 허위입찰</span>은 경매사고로 이어질 수 있으며, <span>미정산(미입금, 구매거부 등) 누적시</span> 비비드 이용 
-                                                제한이 발생될 수 있습니다.<br /><br />
-                                                비비드에 등록된 판매물품의 내용 및 판매진행은 <span>판매자의 전적인 책임</span>으로 이루어지며, 거래 및 결제와 관련된
-                                                모든 책임은 판매자와 구매자에게 있습니다.
-                                            </ModalBottom>
-                                            <Line style={{ marginTop: '10px' }} />
+                                          <ModalBottom>
+                                              <h3>* 알려드립니다.</h3><br />
+                                              <span>입찰 실수 및 허위입찰</span>은 경매사고로 이어질 수 있으며, <span>미정산(미입금, 구매거부 등) 누적시</span> 비비드 이용
+                                              제한이 발생될 수 있습니다.<br /><br />
+                                              비비드에 등록된 판매물품의 내용 및 판매진행은 <span>판매자의 전적인 책임</span>으로 이루어지며, 거래 및 결제와 관련된
+                                              모든 책임은 판매자와 구매자에게 있습니다.
+                                          </ModalBottom>
+                                          <Line style={{ marginTop: '10px' }} />
 
-                                        </ModalFrame>
+                                      </ModalFrame>
 
-                                    </ModalContent>
-                                </ModalLayout>
-                            )}
-                            <BuyBtn onClick={handleModalOpen}><h2>입찰하기</h2></BuyBtn>
+                                  </ModalContent>
+                              </ModalLayout>
+                          )}
+                          <BuyBtn onClick={handleModalOpen}><h2>입찰하기</h2></BuyBtn>
 
-                        </BtnSpace>
+                      </BtnSpace>
 
-                    </TextFrame>
-                </ItemContainer>
+                  </TextFrame>
+              </ItemContainer>
 
-                <GraphContainer>
-                    <ReactApexCharts
-                        options={chartData.options}
-                        series={chartData.series}
-                        type="line"
-                        height={350}
-                        width={1270}
-                    />
-                </GraphContainer>
+              <GraphContainer>
+                  <ReactApexCharts
+                      options={chartData.options}
+                      series={chartData.series}
+                      type="line"
+                      height={350}
+                      width={1270}
+                  />
+              </GraphContainer>
 
-            </Container>
-        </>
-    );
+          </Container>
+      </>
+  );
 };
 
 const Bid = () => {
-    return <Layout props={<BidContent />} />;
+  return <Layout props={<BidContent />} />;
 };
 
 export default Bid;

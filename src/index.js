@@ -12,6 +12,11 @@ import Bid from './pages/Bid';
 import KakaoRedirect from './pages/KakaoRedirect';
 import reportWebVitals from './reportWebVitals';
 import CustomerSupport from './pages/CustomerSupport';
+import SearchResult from './pages/SearchResult';
+import Chat from './pages/Chat';
+import SocketSelect from './pages/SocketSelect';
+import EmployeeInfo from './pages/EmployeeInfo';
+import Hotdeal from './pages/Hotdeal';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -30,6 +35,11 @@ root.render(
         <Route path="/Bid" element={<Bid />} />
         <Route path="/KakaoRedirect" element={<KakaoRedirect />} />
         <Route path="/CustomerSupport" element={<CustomerSupport />} />
+        <Route path="/SearchResult" element={<SearchResult />} />
+        <Route path="/SocketSelect" element={<SocketSelect/>} />
+        <Route path="Chat" element={<Chat/>} />
+        <Route path="/Hotdeal" element={<Hotdeal/>} />
+        <Route path="/EmployeeInfo" element={<EmployeeInfo />} />
       </Routes>
     </BrowserRouter>
 );

@@ -118,9 +118,10 @@ const StyleInput = styled.input`
   width: 90%;
   height: 100%;
   padding: 1% 0% 1% 1%;
-  font-size: 20px;
+  font-size: 19px;
   background-color: rgb(247,247,247);
   border: none;
+  outline: none;
 `;
 
 const IconBox = styled.div`
@@ -237,7 +238,7 @@ const Header = () => {
                 <ul>로그인 / 회원가입</ul>
               </Link>
               )}
-              <Link to="/" style={{textDecoration:"none"}}>
+              <Link to="/Hotdeal" style={{textDecoration:"none"}}>
                 <ul>고객센터</ul>
               </Link>
           </SiteMap>
