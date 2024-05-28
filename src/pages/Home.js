@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Layout from "../components/Layout";
 import Banner from "../components/Banner";
 import SubBanner from "../components/SubBanner";
@@ -8,13 +8,14 @@ import SkeletonItemFrame from "../components/SkeletonItemFrame"; // 스켈레톤
 import axios from "axios";
 import DailyModal from "../components/DailyModal";
 import { ImTelegram } from "react-icons/im";
+import { IoMdHeartEmpty } from "react-icons/io";
 
 const Container = styled.div`
   width: 1200px;
   height: 100%;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: column;
 `;
 
@@ -24,6 +25,111 @@ const Frame = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+`;
+
+const Advertisement = styled.div`
+  width: 160px;
+  height: 600px;
+  left: 150px;
+  bottom: 150px;
+  position: fixed;
+  z-index: 2;
+  background-image: url("images/adv.png");
+  background-size: 100% 100%; 
+  background-position: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 80%;
+  }
+`;
+
+const ScrollBoxContainer = styled.div`
+  width: 120px;
+  height: 300px;
+  right: 180px;
+  bottom: 448px;
+  position: fixed;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-itmes: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  background-size: 100% 100%; 
+  background-position: center;
+  cursor: pointer;
+`;
+
+const ScrollBoxFrame = styled.div`
+  width: 120px;
+  height: 84%;
+  border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5%;
+  position: relative;
+  h3 {
+    color: #888888;
+    padding-top: 20%;
+  }
+  h5 {
+    padding-top: 10%;
+    color: #888888;
+    position: absolute;
+  }
+`;
+
+const StyledHr = styled.hr`
+  width: 80%;
+  border: 1px dotted lightgray;
+`;
+
+const TopBox = styled.div`
+  width: 100%;
+  height: 14%;
+  border: 1px solid lightgray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+const ScrollBox = () => {
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <ScrollBoxContainer>
+      <ScrollBoxFrame>
+        <h5>찜한 상품</h5>
+        <h3>.........</h3>
+        <IoMdHeartEmpty style={{marginTop:"30%", width:"30px", height:"30px", color:"#888888"}}/>
+        <h5 style={{bottom: '80px'}}>찜한 상품이</h5><h5 style={{bottom: '63px'}}>없습니다.</h5>
+      </ScrollBoxFrame>
+      <TopBox onClick={handleScrollToTop}>TOP</TopBox>
+    </ScrollBoxContainer>
+  )
+}
+
+const SkeletonAnimation = keyframes`
+0% {
+  background-position: -200% 0;
+}
+100% {
+  background-position: 200% 0;
+}
+`;
+
+const SkeletonText = styled.div`
+  width: 200px;
+  height: 40px;
+  background: linear-gradient(90deg, #f0f0f0, #f5f5f5, #f0f0f0);
+  background-size: 200% 100%;
+  animation: ${SkeletonAnimation} 1.5s infinite;
+  margin-top: 3%;
+  margin-bottom: 3%;
 `;
 
 const HomeContent = () => {
@@ -78,10 +184,17 @@ const HomeContent = () => {
 
   return (
     <Container>
+      <Advertisement/>
+      <ScrollBox/>
       {/* <DailyModal/> */}
       <Banner />
       <SubBanner />
-      <h2 style={{ marginTop: "3%" }}>마감 임박 경매</h2>
+      {isLoading ? (
+        <SkeletonText />
+      ) : (
+        <h2 style={{ marginTop: "3%", marginBottom: "3%"}}>마감 임박 경매</h2>
+      )}
+
       <Frame>
         {isLoading ? (
           // 로딩 중에는 SkeletonItemFrame을 표시
@@ -98,7 +211,11 @@ const HomeContent = () => {
           ))
         )}
       </Frame>
-      <h2 style={{ marginTop: "3%" }}>최근에 올라온 경매</h2>
+      {isLoading ? (
+        <SkeletonText />
+      ) : (
+        <h2 style={{ marginTop: "3%", marginBottom: "3%"}}>마감 임박 경매</h2>
+      )}
       <Frame>
         {isLoading ? (
           // 로딩 중에는 SkeletonItemFrame을 표시

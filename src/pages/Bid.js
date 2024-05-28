@@ -65,9 +65,10 @@ const ImageFrame = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    border: solid 1px #eeeeee;
     img{
         width: 510px;
-        height: 500px;
+        height: 498px;
     }
 `;
 

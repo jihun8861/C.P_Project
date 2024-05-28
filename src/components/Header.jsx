@@ -99,10 +99,11 @@ const TitleRight = styled.div`
   align-items: center;
   justify-content: space-around;
   h2 {
-    font-size: 20px;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 500;
   }
 `;
 
@@ -118,7 +119,7 @@ const StyleInput = styled.input`
   width: 90%;
   height: 100%;
   padding: 1% 0% 1% 1%;
-  font-size: 19px;
+  font-size: 16px;
   background-color: rgb(247,247,247);
   border: none;
   outline: none;
