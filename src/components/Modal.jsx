@@ -47,9 +47,10 @@ const ModalContent = styled.div`
 
 const ModalHeader = styled.div`
     width: 100%;
-    height: 7%;
+    height: 5%;
     display: flex;
     align-items: center;
+    font-size: 18px;
 `;
 
 const ModalHeaderL = styled.div`
@@ -107,15 +108,6 @@ const Modal1Ig = styled.div`
     height: 70%;
     background-image: url("images/Lock.png");
     background-size: 100% 100%;
-  `
-
-const Modal1Name = styled.h3`
-    width: 100%;
-    height: 30%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
   `
 
 const Modal1Main = styled.div`
@@ -613,12 +605,28 @@ const Modal = ({ title, onClose, modalKey }) => {
     )
   };
 
+  const Modal5 = () => {
+    return (
+      <>
+        <ModalMain>
+          <ModalSearch>
+            <SearchInput type="text" placeholder="상품명을 입력해주세요." />
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+          </ModalSearch>
+        </ModalMain>
+      </>
+    )
+  };
+
   const CustomModal = () => {
     console.log(modalKey)
     if (modalKey == "edit") return (<Modal1 />)
     else if (modalKey == "withdraw") return (<Modal2 />)
     else if (modalKey == "buyList") return (<Modal3 />)
     else if (modalKey == "sellList") return (<Modal4 />)
+    else if (modalKey == "heartList") return (<Modal5 />)
   }
 
   return (

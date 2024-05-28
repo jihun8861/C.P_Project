@@ -149,9 +149,10 @@ const AuctionContent = () => {
   };
 
   const writing = async () => {
+    var token = localStorage.getItem('token')
     const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/writing', {
       data: {
-        userid: "",
+        authorization: token,
         title: title,
         text: context,
         startprice: price,

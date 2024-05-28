@@ -224,6 +224,13 @@ const Header = () => {
     }
   };
 
+	const handleKeyDown = (e) => {
+		if (e.key === 'Enter') {
+			sendProduct();
+		}
+	};
+
+
   return (
     <>
       <Container>
@@ -249,7 +256,7 @@ const Header = () => {
                   <h1>BE BID</h1>
               </Link>
               <InputFrame>
-                <StyleInput placeholder="검색어를 입력해주세요" onChange={productNameChange}/>
+                <StyleInput placeholder="검색어를 입력해주세요" onChange={productNameChange} onKeyDown={handleKeyDown}/>
                 <IconBox>
                   <IoSearch style={{width:"20px", height: "30px"}} onClick={sendProduct}/>
                 </IconBox>

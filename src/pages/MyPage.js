@@ -18,7 +18,6 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        border: solid 1px;
         p {
         padding-bottom: 30px;
         font-size: 23px;
@@ -57,7 +56,6 @@
         display: flex;
         flex-direction: column;
         margin-left: 50px;
-        border: solid 1px;
     `;
 
     const RightInfoBox = styled.div`
@@ -67,7 +65,6 @@
         display: flex;
         flex-direction: row;
         margin-bottom: 100px;
-        border: solid 1px;
     `;
 
     //오른쪽 박스의 왼쪽 내용(사용자 이름, 횟수)
@@ -331,14 +328,6 @@
         background: linear-gradient(to right, #FFACFC, #B76CFD);
     `;
 
-    const ChoiceList = () => {
-        return (
-            <>
-                찜한목록
-            </>
-        );
-    };
-
     const BidList = () => {
         return (
             <>
@@ -359,7 +348,7 @@
     const MyPageContent = () => {
         const [isModalOpen, setIsModalOpen] = useState(false);
         const [modalTitle, setModalTitle] = useState(""); // 모달 제목을 상태로 관리
-        const [selectedMenu, setSelectedMenu] = useState(ChoiceList);
+        const [selectedMenu, setSelectedMenu] = useState(BidList);
         const [modalKey, setModalKey] = useState("");
         const [userInfo, setUserInfo] = useState(null); // 유저 정보를 담을 상태
         const [name, setName] = useState('')
@@ -430,6 +419,7 @@
                             <h2>거래 정보</h2>
                             <li onClick={() => handleItemClick("구매내역", "buyList")}>구매내역</li>
                             <li onClick={() => handleItemClick("판매내역", "sellList")}>판매내역</li>
+                            <li onClick={() => handleItemClick("찜한물품", "heartList")}>찜한물품</li>
                         </ul>
                     </LeftMenu>
                     {isModalOpen && (
@@ -489,7 +479,7 @@
                                 <BoxRleft></BoxRleft>
                                 <BoxRmid>
                                     <h2>출석확인하러가기</h2>
-                                    님이 몇 번을 출석했는지 확인하셈 ~
+                                     몇 번 출석했는지 확인하쇼
                                 </BoxRmid>
                                 <BoxRright>버튼</BoxRright>
                             </BoxR>
@@ -498,11 +488,7 @@
 
                     <RightProduct>
                         <h2>내 상품</h2>
-                        <ProductMenu>
-                            <ProductMenuItem1 onClick={() => handleProductMenuClick(ChoiceList)}>
-                                찜
-                            </ProductMenuItem1>
-                                
+                        <ProductMenu>                                
                             <ProductMenuItem2 onClick={() => handleProductMenuClick(BidList)}>
                                 입찰중
                             </ProductMenuItem2>
