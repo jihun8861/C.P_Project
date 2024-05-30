@@ -27,6 +27,7 @@ const Main = styled.div`
   justify-content: center;
 `;
 
+
 const Layout = ({ props }) => {
   const [showLoginExtension, setShowLoginExtension] = useState(false);
   const [logoutTrigger, setLogoutTrigger] = useState(false); // 로그아웃 트리거 상태 추가
@@ -37,7 +38,7 @@ const Layout = ({ props }) => {
     if (token) {
       const timer = setTimeout(() => {
         setShowLoginExtension(true);
-      }, 10000);
+      }, 100000);
       return () => clearTimeout(timer);
     }
   }, [logoutTrigger]); // logoutTrigger 상태 변경 시에만 useEffect 실행
@@ -45,7 +46,8 @@ const Layout = ({ props }) => {
   const handleExtend = () => {
     setShowLoginExtension(false);
     const timer = setTimeout(() => {
-    }, 100000);
+      setShowLoginExtension(true);
+    }, 1800000);
     return () => clearTimeout(timer);
   };
 
@@ -54,6 +56,14 @@ const Layout = ({ props }) => {
     localStorage.removeItem("token");
     setShowLoginExtension(false);
     window.location.reload()
+  };
+
+  // 남은 시간을 HH:MM:SS 형식으로 변환하는 함수
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (

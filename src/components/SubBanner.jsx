@@ -8,6 +8,7 @@ const Container = styled.div`
   background-image: url("/SubBanner.png");
   background-size: 100% 100%; 
   background-position: center;
+  cursor: pointer;
 `;
 
 const SubBanner = () => {

@@ -231,6 +231,11 @@ const Header = () => {
 		}
 	};
 
+  const handleScrollToTop = () => {
+    navigate("/");
+    window.location.reload();
+  };
+  
 
   return (
     <>
@@ -254,7 +259,7 @@ const Header = () => {
             <TitleLeft>
               <Link to="/" style={LinkStyle}>
                   <img src="/images/BebidIcon.png" style={{width:"45px", height: "60px", paddingBottom:"5px"}}/>
-                  <h1>BE BID</h1>
+                  <h1 onClick={handleScrollToTop}>BE BID</h1>
               </Link>
               <InputFrame>
                 <StyleInput placeholder="검색어를 입력해주세요" onChange={productNameChange} onKeyDown={handleKeyDown}/>

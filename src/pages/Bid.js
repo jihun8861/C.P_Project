@@ -737,10 +737,10 @@ const BidContent = () => {
                                         </ModalHeader>
 
                                         <ModalFrame>
-                                            <MainTitle>0세대 해적왕 골드 D 로저의 칼</MainTitle>
+                                            <MainTitle>{userInfo.data.title}</MainTitle>
                                             <ModalMain>
                                                 <ModalMainLeft><h3>판매자</h3></ModalMainLeft>
-                                                <ModalMainRight><span>몽키 D 루피</span></ModalMainRight>
+                                                <ModalMainRight><span>{userInfo.data.userid}</span></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>

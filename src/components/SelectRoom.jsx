@@ -53,7 +53,7 @@ const StyledButton = styled.button`
 	background-color: salmon;
 `;
 
-const SelectRoom = () => {
+const SelectRoom = ({ modalClose }) => {
 	const navigate = useNavigate();
 
 	const enterChat = () => {
@@ -84,10 +84,10 @@ const SelectRoom = () => {
 					<h2>팬이에요 소통해요</h2>
 				</LeftSight>
 				<RightSight>
-					<StyledButton onClick={enterChat}	>입장</StyledButton>
+					<StyledButton onClick={enterChat}>입장</StyledButton>
 				</RightSight>
 			</SmallBox>
-			<StyledButton style={{ width: "150px", height: "40px", marginTop: "50px" }}>닫기</StyledButton>
+			<StyledButton style={{ width: "150px", height: "40px", marginTop: "50px" }} onClick={modalClose}>닫기</StyledButton>
 		</Container>
 	)
 }

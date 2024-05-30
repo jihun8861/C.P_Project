@@ -21,6 +21,7 @@ const Container = styled.div`
   position: relative;
   animation: ${fadeIn} 0.5s ease-in-out;
   transition: background-image 0.5s ease-in-out;
+  cursor: pointer;
 `;
 
 const ArrowFrame = styled.div`
