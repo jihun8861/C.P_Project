@@ -38,7 +38,7 @@ const Layout = ({ props }) => {
     if (token) {
       const timer = setTimeout(() => {
         setShowLoginExtension(true);
-      }, 100000);
+      }, 1000000000);
       return () => clearTimeout(timer);
     }
   }, [logoutTrigger]); // logoutTrigger 상태 변경 시에만 useEffect 실행
@@ -47,7 +47,7 @@ const Layout = ({ props }) => {
     setShowLoginExtension(false);
     const timer = setTimeout(() => {
       setShowLoginExtension(true);
-    }, 1800000);
+    }, 18000000000);
     return () => clearTimeout(timer);
   };
 

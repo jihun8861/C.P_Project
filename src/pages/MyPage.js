@@ -406,6 +406,7 @@ const MyPageContent = () => {
     const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
     const [chargeAmount, setChargeAmount] = useState(0);
     const [impReady, setImpReady] = useState(false);
+    const [bidMoney, setBidMoney] = useState();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -503,6 +504,7 @@ const MyPageContent = () => {
             m_redirect_url: "" // 모바일 결제 후 리다이렉트 될 주소
         }, async (rsp) => {
             if (rsp.success) {
+                const token = localStorage.getItem("token");
                 try {
                     const response = await axios.post(
                         "http://localhost:3000/graphql",
@@ -520,7 +522,7 @@ const MyPageContent = () => {
                         },
                         {
                             headers: {
-                                Authorization: "Bearer 액세스토큰" // 적절한 액세스 토큰으로 교체
+                                Authorization: "token" // 적절한 액세스 토큰으로 교체
                             }
                         }
                     );
@@ -528,7 +530,7 @@ const MyPageContent = () => {
                     // Update user info with charged amount
                     setUserInfo((prevUserInfo) => ({
                         ...prevUserInfo,
-                        bid_money: (prevUserInfo.bid_money || 0) + myAmount,
+                        bid_money: (prevUserInfo.bid_money || 0) + myAmount, // 기존 금액에 충전한 금액 추가
                     }));
                     setChargeAmount(0);
                     closeChargeModal(); // Close the modal after a successful charge
@@ -542,7 +544,7 @@ const MyPageContent = () => {
     };
 
     const exp = 100;
-    const ratio = parseInt(3);
+    const ratio = parseInt(37);
 
     return (
         <Frame>

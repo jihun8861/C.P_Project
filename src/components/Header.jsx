@@ -243,8 +243,15 @@ const Header = () => {
         <Frame>
           <SiteMap>
             {isLoggedIn ? (
+              <Link to="/mypage" style={{textDecoration:"none"}}>
+                <ul style={{paddingLeft:"20%", textDecoration:"none"}}>비드머니: 0원</ul>
+              </Link>
+              ) : ( 
+                <h1></h1>
+              )}
+            {isLoggedIn ? (
               <Link to="/" style={{textDecoration:"none"}}>
-                <ul onClick={handleLogout} style={{paddingLeft:"50%", textDecoration:"none"}}>로그아웃</ul>
+                <ul onClick={handleLogout} style={{paddingLeft:"20%", textDecoration:"none"}}>로그아웃</ul>
               </Link>
               ) : ( 
               <Link to="/SignIn" style={{textDecoration:"none"}}>

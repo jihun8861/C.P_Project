@@ -1,19 +1,22 @@
+// 서드파티 라이브러리
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import Layout from "../components/Layout";
-import ItemFrame from "../components/ItemFrame";
-import styled, { keyframes } from "styled-components";
-import { FaHeart } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
-import { BiSolidCategoryAlt } from "react-icons/bi";
 import ReactApexCharts from 'react-apexcharts';
-import { MdOutlineAccessTime } from "react-icons/md";
-import { IoCloseOutline } from "react-icons/io5";
-import { MdAccessTimeFilled } from "react-icons/md";
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
 import axios from "axios";
 
+// 서드파티 아이콘 라이브러리
+import { FaHeart } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { IoCloseOutline } from "react-icons/io5";
+import { MdAccessTimeFilled } from "react-icons/md";
+
+// 절대 경로 모듈 (프로젝트 내부의 특정 위치에서 가져오는 모듈)
+import Layout from "../components/Layout";
+import styled, { keyframes } from "styled-components";
+// 현지훈 바보
 const slideInAnimation = keyframes`
   0% {
     opacity: 0;
@@ -163,11 +166,20 @@ const LastIcon = styled(MdAccessTimeFilled)`
 `;
 
 const StatusBox = styled.div`
-    width: 100%;
+    width: 609px;
     height: 50%;
     display: flex;
     flex-direction: row;
     margin-top: 20px;
+`;
+
+const ExplainBox = styled.div`
+    width: 100%;
+    height: 50%;
+    border: 1px solid black;
+    display: flex;
+    margin-top: 20px;
+    overflow-y: scroll;
 `;
 
 const Status = styled.div`
@@ -185,6 +197,7 @@ const StatusText = styled.div`
     h3{
         padding-top: 15px;
     }
+    overflow-y: scroll;
 `;
 
 const BtnSpace = styled.div`
@@ -577,7 +590,21 @@ const BidContent = () => {
         return new Intl.NumberFormat('ko-KR').format(number);
     };
 
-    const handleHeartClick = () => {
+    const handleHeartClick = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/toggle_like', {
+                "data": {
+                    "authorization": token,
+                    "content_id": 12
+                  }
+            })
+            console.log(response.data);
+        }
+        catch(error) {
+            console.log(error)
+        }
+
         if (token) {
             setIsClicked(!isClicked);
             if (!isClicked) {
@@ -655,6 +682,24 @@ const BidContent = () => {
 
         fetchImages();
     }, []);
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/toggle_like' , {
+    //                 "data": {
+    //                     "user_id": "string",
+    //                     "content_id": 0
+    //                 }
+    //             })
+    //             console.log(response.data)
+    //         }
+    //         catch(error) {
+    //             console.log(error);
+    //         }
+    //     }
+    //     fetchData();
+    // },[])
     
     return (
         <>
@@ -770,7 +815,7 @@ const BidContent = () => {
 
                                             <ModalMain>
                                                 <ModalMainLeft><h3>현재가</h3></ModalMainLeft>
-                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(bidAmount)}</h3></ModalMainRight>
+                                                <ModalMainRight style={{ color: '#114da5', fontWeight: 'bold' }}><h3>{formatNumber(bidAmount)}원</h3></ModalMainRight>
                                             </ModalMain>
 
                                             <ModalMain>

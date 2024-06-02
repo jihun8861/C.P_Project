@@ -1,4 +1,4 @@
-import React from "react";
+import React,{ useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
@@ -575,7 +575,7 @@ const Modal = ({ title, onClose, modalKey }) => {
     )
   };
 
-  const Modal3 = () => {
+    const Modal3 = () => {  //  구매내역
     return (
       <>
         <ModalMain>
@@ -585,12 +585,33 @@ const Modal = ({ title, onClose, modalKey }) => {
               <SearchIcon />
             </SearchIconWrapper>
           </ModalSearch>
+          
         </ModalMain>
       </>
     )
   };
 
-  const Modal4 = () => {
+  const Modal4 = () => {  //  판매내역
+
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      console.log("hello")
+      const fetchData = async () => {
+        try {
+          const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/' + 'api/users/sales_history' , {
+            "data": {
+              "authorization": "token"
+            }
+          })
+          console.log(response.data);
+        }
+        catch(error) {
+          console.log(error);
+        }
+      }
+      fetchData();
+    }, [])
+
     return (
       <>
         <ModalMain>

@@ -159,6 +159,7 @@ const AuctionContent = () => {
         picture: imgFile,
       }
     })
+    console.log(response.data)
     localStorage.removeItem('isWriting')
     navigate('/');
   };

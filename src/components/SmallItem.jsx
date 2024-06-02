@@ -8,15 +8,15 @@ display: flex;
 align-items: center;
 justify-content: space-around;
 margin-top: 20px;
-border: 1px solid black;
+border: 1px solid #eeeeee;
 `;
 
   const ImgBox = styled.div`
     width: 20%;
     height: 80%;
-    border: 1px solid black;
+    border: 1px solid #eeeeee;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     overflow: hidden;
     img {
@@ -34,7 +34,7 @@ border: 1px solid black;
     const TitleTextArea = styled.div`
       width: 100%;
       height: 40%;
-      border-bottom: 1px solid lightgray;
+      border-bottom: 1px solid #eeeeee;
     `;
 
     const ExplanationArea = styled.div`
@@ -50,13 +50,14 @@ border: 1px solid black;
   const StyledButton = styled.div`
   width: 100%;
   height: 30%;
-  border-radius: 15px;
-  background-color: salmon;
+  border-radius: 5px;
+  background-color: lightsalmon;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   color: white;
+  cursor: pointer;
   `;
 
 const SmallItem = ( {picture, title, price_info, view_count} ) => {
