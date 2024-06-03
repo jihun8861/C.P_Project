@@ -41,7 +41,7 @@ const Container = styled.div`
 `;
 
 const Explain = styled.div`
-    width: 55%;
+    width: 100%;
     height: 10%;
     margin-top: 10px;
     padding: 20px 0px 20px 0px;

@@ -7,6 +7,7 @@ import ItemFrame from "../components/ItemFrame";
 import SkeletonItemFrame from "../components/SkeletonItemFrame"; // 스켈레톤 프레임 import
 import axios from "axios";
 import { IoMdHeartEmpty } from "react-icons/io";
+import HotdealContent from "../components/HotdealContent";
 
 const Container = styled.div`
   width: 1200px;
@@ -230,6 +231,9 @@ const HomeContent = () => {
             />
           ))
         )}
+      </Frame>
+      <Frame>
+        <HotdealContent></HotdealContent>
       </Frame>
     </Container>
   )

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import SmallItem from "../components/SmallItem";
 import axios from "axios";
+import { format  } from 'date-fns';
+import ko from 'date-fns/locale/ko'; // 한국어 로케일 추가
 
 const Container = styled.div`
   width: 1200px;
@@ -36,7 +38,7 @@ const ImgBox = styled.div`
 `;
 
 const TextBox = styled.div`
-  width: 50%;
+  width: 70%;
   height: 80%;
   display: flex;
   flex-direction: column;
@@ -75,7 +77,9 @@ const StyledButton = styled.div`
   cursor: pointer;
 `;
 
-const LargeItem = ({ startprice, title, picture }) => {
+const LargeItem = ({ startprice, title, picture, start_time }) => {
+
+
   return (
     <LargeFrame>
       <ImgBox>
@@ -84,20 +88,19 @@ const LargeItem = ({ startprice, title, picture }) => {
       <TextBox>
         <TitleTextArea>
           <h1 style={{ whiteSpace: "pre-wrap" }}>TODAY </h1><h1>PICK</h1>
+          <h2>{start_time}</h2>
         </TitleTextArea>
         <ExplanationArea>
           <h3>요즘 제일 핫해! {title}</h3>
         </ExplanationArea>
         <PriceArea>
-          <h2>현재 시작가: {startprice}원</h2>
+          <h2>현재가: {startprice.toLocaleString()}원</h2> {/* 천 단위 구분 기호 추가 */}
         </PriceArea>
       </TextBox>
-      <ImgBox style={{ border: "none" }}>
-        <StyledButton>핫딜상품 입찰하기</StyledButton>
-      </ImgBox>
     </LargeFrame>
   );
 };
+
 
 const SmallFrameArea = styled.div`
   width: 100%;
@@ -112,6 +115,7 @@ const HotdealContent = () => {
   const [LargeDataTitle, setLargeDataTitle] = useState();
   const [LargeDataPrice, setLargeData] = useState();
   const [LargeDataPicture, setLargeDataPicture] = useState();
+  const [LargeDataStartTime, setLargeDataStartTime] = useState();
   const [Data, setData] = useState([]);
   const [imgArray, setImageArray] = useState([]);
   const [gdArray, setGdArray] = useState([]);
@@ -153,9 +157,10 @@ const HotdealContent = () => {
         const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/hotdeals_contents');
         console.log(response.data);
         setData(response.data);
-        setLargeData(response.data[0].startprice);
+        setLargeData(response.data[0].price_info);
         setLargeDataTitle(response.data[0].title);
         setLargeDataPicture(response.data[0].picture); // 첫 번째 항목의 이미지를 LargeDataPicture에 설정
+        setLargeDataStartTime(response.data[0].start_time);
         const newImgArray = response.data.slice(0, 7).map(item => item.picture);
         setImageArray(newImgArray);
         setDataLoaded(true); // 데이터 로드 상태를 true로 설정
@@ -177,6 +182,7 @@ const HotdealContent = () => {
           title={LargeDataTitle}
           startprice={LargeDataPrice}
           picture={<img src={gdArray[0]}/>} // 첫 번째 이미지 사용
+          start_time={LargeDataStartTime}
         />
       )}
 
