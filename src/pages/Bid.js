@@ -71,7 +71,7 @@ const ImageFrame = styled.div`
     border: solid 1px #eeeeee;
     img{
         width: 510px;
-        height: 498px;
+        height: 495px;
     }
 `;
 

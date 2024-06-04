@@ -56,10 +56,10 @@ border: 1px solid #eeeeee;
       height: 30%;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       span{
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        color: #868686;
+        font-weight: bold;
       }
     `;
 
@@ -75,6 +75,11 @@ border: 1px solid #eeeeee;
   color: white;
   cursor: pointer;
   `;
+
+  const UserIcon = styled(FaUser)`
+      width:10%;
+      height: 60%;
+  `
 
 const SmallItem = ( {picture, title, price_info, view_count, userid} ) => {
   const truncatedProduct = title.length > 25 ? title.substring(0, 25) + "..." : title;
@@ -95,8 +100,8 @@ const SmallItem = ( {picture, title, price_info, view_count, userid} ) => {
           <h4>{truncatedProduct}</h4>
         </ExplanationArea>
         <PriceArea>
-          <span>현재가: {formattedPrice} 원</span>
-          <span><FaUser style={{width: "70%",height:"70%",padding: "5px 5px 0 0"}}/>{userid}</span>
+          <h4>현재가: {formattedPrice} 원</h4>
+          <span>판매자 {userid}</span>
         </PriceArea>
       </TextBox>
      
