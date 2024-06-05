@@ -440,31 +440,32 @@ const ModalBottom = styled.div`
 const BidContent = () => {
     const location = useLocation();
     const userInfo = { ...location.state };
-    const timeDifference = userInfo.timeDifference; // timeDifference 가져오기
+    const timeDifference = userInfo.timeDifference;
     const navigate = useNavigate();
 
-    const [totalHeartCount, setTotalHeartCount] = useState(0); // 총 하트 카운트
-    const [heartCount, setHeartCount] = useState(0); // 한 사람이 누른 하트 카운트
-    const [isClicked, setIsClicked] = useState(false); // 클릭 처리하는 변수
+    const [totalHeartCount, setTotalHeartCount] = useState(0);
+    const [heartCount, setHeartCount] = useState(0);
+    const [isClicked, setIsClicked] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [bidAmount, setBidAmount] = useState(userInfo.data.startprice); // 현재가
-    const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000); // 입찰금액
+    const [bidAmount, setBidAmount] = useState(userInfo.data.startprice);
+    const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000);
     const startTime = new Date(userInfo.data.start_time);
     const token = localStorage.getItem('token');
-    startTime.setHours(startTime.getHours() + 9); // start_time에 9시간 추가
+    startTime.setHours(startTime.getHours() + 9);
 
-    const formattedStartTime = format(startTime, 'yyyy/MM/dd HH:mm'); // 시작시간의 형식을 맞추기 위해 사용
+    const formattedStartTime = format(startTime, 'yyyy/MM/dd HH:mm');
 
-    // 경매 종료 시간 계산 (시작 시간으로부터 8일 후)
     const endDate = new Date(startTime.getTime() + 8 * 24 * 60 * 60 * 1000);
     const formattedEndTime = format(endDate, 'yyyy/MM/dd HH:mm');
+
+    const [bidList, setBidList] = useState([20,30]);
 
     // 임시 그래프 차트 데이터
     const [chartData, setChartData] = useState({
         series: [{
-            name: 'Series 1',
-            data: [31, 40, 45, 51, 58, 109, 120]
+            name: 'Bid Prices',
+            data: bidList, // bidList를 그래프 데이터로 사용
         }],
         options: {
             chart: {
@@ -481,7 +482,7 @@ const BidContent = () => {
                 curve: 'straight'
             },
             title: {
-                text: 'Sample Chart',
+                text: 'Bid Prices Over Time',
                 align: 'left'
             },
             grid: {
@@ -491,7 +492,7 @@ const BidContent = () => {
                 },
             },
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                categories: ['1', '2', '3', '4', '5', '6', '7'], // 일주일치 데이터 예시
             }
         },
     });
@@ -550,10 +551,13 @@ const BidContent = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    // 서버에 입찰 금액 업데이트 요청
-                    const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/update_bid_amount', {
-                        content_id: userInfo.data.id,
-                        bid_amount: inputBidAmount,
+                    const token = localStorage.getItem('token');
+                    const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/bid', {
+                        "data": {
+                            "authorization": token,
+                            "item_title": userInfo.data.title,
+                            "bid_amount": inputBidAmount
+                        }
                     });
 
                     if (response.status === 200) {
@@ -566,13 +570,8 @@ const BidContent = () => {
                         handleModalClose();
                         setBidAmount(inputBidAmount);
                         userInfo.data.startprice = inputBidAmount; // 업데이트된 현재가를 userInfo에 반영
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '입찰 실패',
-                            text: '입찰 중 오류가 발생했습니다. 다시 시도해주세요.',
-                            confirmButtonText: '확인'
-                        });
+                        setBidList([...bidList, inputBidAmount]); // 새로운 입찰 금액을 bidList에 추가
+                        console.log(bidList);
                     }
                 } catch (error) {
                     Swal.fire({
@@ -596,13 +595,12 @@ const BidContent = () => {
             const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/toggle_like', {
                 "data": {
                     "authorization": token,
-                    "content_id": 12
-                  }
-            })
+                    "content_id": userInfo.data.id
+                }
+            });
             console.log(response.data);
-        }
-        catch(error) {
-            console.log(error)
+        } catch (error) {
+            console.log(error);
         }
 
         if (token) {
@@ -623,19 +621,17 @@ const BidContent = () => {
     const handleSupportClick = () => {
         if (token) {
             return (
-              alert('고객지원으로 이동됨'),
-              navigate('/CustomerSupport')
-            )
-          }
-          else {
+                alert('고객지원으로 이동됨'),
+                navigate('/CustomerSupport')
+            );
+        } else {
             return (
-              alert('로그인을 해주세요'),
-              navigate('/SignIn')
-            )
-          }
-    }
+                alert('로그인을 해주세요'),
+                navigate('/SignIn')
+            );
+        }
+    };
 
-    // 1초마다 남은 시간 갱신
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date());
@@ -658,10 +654,9 @@ const BidContent = () => {
         hits();
     }, [userInfo.data.id]);
 
-    const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
-    const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
-    const FILE_NAME = userInfo.data.picture; 
-
+    const API_KEY = 'YOUR_API_KEY';
+    const DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID';
+    const FILE_NAME = userInfo.data.picture;
     const [nowItem, setNowItem] = useState('');
 
     useEffect(() => {
@@ -673,8 +668,7 @@ const BidContent = () => {
                         pageSize: 1
                     }
                 });
-                console.log(response.data.files[0].thumbnailLink)
-                setNowItem(response.data.files[0].thumbnailLink)
+                setNowItem(response.data.files[0].thumbnailLink);
             } catch (error) {
                 console.log('gderror', error);
             }
@@ -682,24 +676,6 @@ const BidContent = () => {
 
         fetchImages();
     }, []);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/toggle_like' , {
-    //                 "data": {
-    //                     "user_id": "string",
-    //                     "content_id": 0
-    //                 }
-    //             })
-    //             console.log(response.data)
-    //         }
-    //         catch(error) {
-    //             console.log(error);
-    //         }
-    //     }
-    //     fetchData();
-    // },[])
     
     return (
         <>
@@ -758,7 +734,7 @@ const BidContent = () => {
 
                             <StatusText>
                                 <h3>{formattedStartTime} ~ {formattedEndTime}</h3>
-                                <h3>{userInfo.data.userid}</h3> {/*{userInfo.data.userid}*/}
+                                <h3>{userInfo.data.userid}</h3>
                                 <h3>{formatNumber(userInfo.data.startprice)}원</h3>
                                 <h3>{userInfo.data.text}</h3>
                             </StatusText>

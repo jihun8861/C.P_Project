@@ -68,14 +68,14 @@ const BigBoxR = styled.div`
   justify-content: flex-start;
 `;
 
-const ImgFrame = styled.input`
+const ImgFrame = styled.div`
   width: 300px;
   height: 300px;
   border: 1px solid #b2b2b2;
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: url('./images/regist.png');
+  background-image: ${({ imgUrl }) => imgUrl ? `url(${imgUrl})` : 'url("./images/regist.png")'};
   background-size: 100% 100%;
 `;
 
@@ -163,7 +163,7 @@ const AuctionContent = () => {
         },
       });
       setImgFile(response.data);
-      setImgUrl(response.data);
+      setImgUrl(URL.createObjectURL(selectedFiles[0])); // 이미지 파일을 URL로 변환하여 보여줌
       console.log('File upload success:', response.data);
       localStorage.setItem('isWriting', true)
     }
@@ -218,7 +218,10 @@ const AuctionContent = () => {
         </BigBoxL>
 
         <BigBoxR>
-          <ImgFrame imgUrl={imgUrl} type="file" onChange={handleFileChange} multiple />
+          {/* 이미지를 표시하는 ImgFrame을 div 요소로 변경 */}
+          <ImgFrame imgUrl={imgUrl} onClick={() => document.getElementById("uploadInput").click()} />
+          {/* 파일 선택 버튼은 숨기고, ImgFrame을 클릭했을 때 파일 선택 창이 열리도록 함 */}
+          <input id="uploadInput" type="file" style={{ display: 'none' }} onChange={handleFileChange} />
         </BigBoxR>
       </BigBox>
 

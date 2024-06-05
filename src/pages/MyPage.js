@@ -418,9 +418,11 @@ const MyPageContent = () => {
                     }
                 });
                 setUserInfo(response.data);
+                setBidMoney(response.data.cash);
                 if (response.data && response.data.nick_name) {
                     setName(response.data.nick_name);
                 }
+                console.log(response.data);
             } catch (error) {
                 console.error('Error fetching user info:', error);
             }
@@ -486,62 +488,59 @@ const MyPageContent = () => {
 
     const handleChargeSubmit = () => {
         if (!impReady) {
-            alert('결제 모듈이 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
-            return;
+          alert('결제 모듈이 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+          return;
         }
-
+    
         const myAmount = Number(chargeAmount);
         window.IMP.request_pay({
-            pg: "kakaopay",
-            pay_method: "card",
-            name: "충전",
-            amount: myAmount,
-            buyer_email: "gildong@gmail.com",
-            buyer_name: "홍길동",
-            buyer_tel: "010-4242-4242",
-            buyer_addr: "서울특별시 강남구 신사동",
-            buyer_postcode: "01181",
-            m_redirect_url: "" // 모바일 결제 후 리다이렉트 될 주소
+          pg: "kakaopay",
+          pay_method: "card",
+          name: "충전",
+          amount: myAmount,
+          buyer_email: "gildong@gmail.com",
+          buyer_name: "홍길동",
+          buyer_tel: "010-4242-4242",
+          buyer_addr: "서울특별시 강남구 신사동",
+          buyer_postcode: "01181",
+          m_redirect_url: ""
         }, async (rsp) => {
-            if (rsp.success) {
-                const token = localStorage.getItem("token");
-                try {
-                    const response = await axios.post(
-                        "http://localhost:3000/graphql",
-                        {
-                            query: `
-                                mutation {
-                                    buyTicket(impUid: "${rsp.imp_uid}", amount: ${rsp.paid_amount}, pay_method: "${rsp.pay_method}") {
-                                        id
-                                        count
-                                        money
-                                        method
-                                    }
-                                }
-                            `,
-                        },
-                        {
-                            headers: {
-                                Authorization: "token" // 적절한 액세스 토큰으로 교체
-                            }
-                        }
-                    );
-                    console.log(response.data);
-                    // Update user info with charged amount
-                    setUserInfo((prevUserInfo) => ({
-                        ...prevUserInfo,
-                        bid_money: (prevUserInfo.bid_money || 0) + myAmount, // 기존 금액에 충전한 금액 추가
-                    }));
-                    setChargeAmount(0);
-                    closeChargeModal(); // Close the modal after a successful charge
-                } catch (error) {
-                    console.error('결제 정보 등록 실패:', error);
+          if (rsp.success) {
+            const token = localStorage.getItem("token");
+            try {
+              const response = await axios.post(
+                "https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/payments",
+                {
+                  query: `
+                    mutation {
+                      buyTicket(impUid: "${rsp.imp_uid}", amount: ${rsp.paid_amount}, method: "${rsp.pay_method}") {
+                        id
+                        count
+                        money
+                        method
+                      }
+                    }
+                  `,
+                },
+                {
+                  headers: {
+                    Authorization: token
+                  }
                 }
-            } else {
-                alert(`결제 실패: ${rsp.error_msg}`);
+              );
+    
+              // Update user info with charged amount
+              setBidMoney(prevBidMoney => prevBidMoney + myAmount);
+              setChargeAmount(0);
+              closeChargeModal(); // Close the modal after a successful charge
+            } catch (error) {
+              console.error('결제 정보 등록 실패:', error);
             }
+          } else {
+            alert(`결제 실패: ${rsp.error_msg}`);
+          }
         });
-    };
+      };
 
     const exp = 100;
     const ratio = parseInt(37);
@@ -578,7 +577,7 @@ const MyPageContent = () => {
                         </LExplain>
                         <LTransactionBox>
                             <LBoxInL>
-                                비드머니 {userInfo?.bid_money || 0}원
+                                비드머니 {bidMoney}원
                             </LBoxInL>
                             <LBoxInR>
                                 <LBoxChargingBtn onClick={handleChargeClick}>
