@@ -8,7 +8,7 @@ import Footer from "./Footer";
 import LoginExtension from "./LoginExtension";
 
 const Container = styled.div`
-  min-height: 66vh;
+  min-height: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,13 +18,12 @@ const Container = styled.div`
 const Main = styled.div`
   max-width: 1920px;
   min-width: 1200px;
-  height: auto;
+  min-height: 57vh;
   background-color: white;
   display: flex;
   flex-direction: column;
   flex: 1;
   align-items: center;
-  justify-content: center;
 `;
 
 

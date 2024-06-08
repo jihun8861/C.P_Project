@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Layout from "../components/Layout";
 import Modal from "../components/Modal";
+import MyPageItemBox from "../components/MyPageItemBox";
+import { format } from 'date-fns';
 import axios from "axios";
 
 const Frame = styled.div`
     width: 100%;
-    height: 65vh;
+    height: auto;
     display: flex;
     flex-direction: row;
-    margin-top: 7%;
+    margin-top: 60px;
 `;
+
 
 //여기부터 왼쪽 박스의 내용
 const LeftBox = styled.div`
@@ -23,6 +26,7 @@ const LeftBox = styled.div`
     font-size: 23px;
     font-weight: bold;
     }
+    border: 1px solid black;
 `;
 
 const LeftMenu = styled.div`
@@ -49,22 +53,26 @@ const LeftHr = styled.div`
     color: #dadee5;
 `;
 
-//여기부터 오른쪽 박스의 내용
 const RightBox = styled.div`
     width: 85%;
-    height: 100%;
     display: flex;
-    flex-direction: column;
-    margin-left: 50px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column; // 컨텐츠를 세로로 정렬합니다.
+    margin-top: auto; // 푸터 아래에 위치하도록 설정합니다.
+    border: 1px solid black;
 `;
+
+
 
 const RightInfoBox = styled.div`
     width: 100%;
-    height: 45%;
+    height: 260px;
     padding: 20px;
     display: flex;
     flex-direction: row;
     margin-bottom: 100px;
+    border: 1px solid black;
 `;
 
 //오른쪽 박스의 왼쪽 내용(사용자 이름, 횟수)
@@ -260,7 +268,7 @@ const BoxRright = styled.button`
 
 const RightProduct = styled.div`
     width: 100%;
-    height: auto;
+    min-height: 100px;
     h2 {
         padding: 10px;
     }
@@ -307,7 +315,9 @@ const ProductMenuItem3 = styled.div`
 
 const ProductBox = styled.div`
     width: 100%;
-    height: 60%;
+    height: auto;
+    display: flex;
+    background-color: red;
 `;
 
 // 게이지 디자인
@@ -379,22 +389,67 @@ const ModalContent = styled.div`
     }
 `;
 
+
 const BidList = () => {
     return (
-        <>
-            입찰목록
-        </>
+        <div>
+       
+        </div>
     );
 };
 
 const SellList = () => {
+    const [sellingList, setSellingList] = useState([]);
+    const [images, setImages] = useState([]);
+    const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
+    const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
+  
+    useEffect(() => {
+      const fetchSellingList = async () => {
+        const token = localStorage.getItem('token');
+        try {
+          const response = await axios.post(
+            'https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/selling_contents',
+            {
+              data: {
+                authorization: token
+              }
+            }
+          );
+          const data = response.data;
+          setSellingList(data);
+  
+          let tempFileData = data.map(item => item.picture);
+  
+          // Fetch images
+          let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
+            const GCresponse = await axios.get(`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${DRIVE_FOLDER_ID}' in parents&fields=files(id,name,thumbnailLink)`, {
+              params: {
+                key: API_KEY,
+                pageSize: 1
+              }
+            });
+            return GCresponse.data.files[0].thumbnailLink;
+          }));
+  
+          setImages(tempImages);
+        } catch (error) {
+          console.error('Error fetching selling list:', error);
+        }
+      };
+  
+      fetchSellingList();
+    }, []);
+  
     return (
-        <>
-            판매중
-        </>
+      <>
+        {sellingList.map((item, index) => (
+          <MyPageItemBox/>
+        ))}
+      </>
     );
-};
-
+  };
+  
 
 const MyPageContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -406,7 +461,11 @@ const MyPageContent = () => {
     const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
     const [chargeAmount, setChargeAmount] = useState(0);
     const [impReady, setImpReady] = useState(false);
-    const [bidMoney, setBidMoney] = useState();
+    const [bidMoney, setBidMoney] = useState(0);
+
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('ko-KR').format(number);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -488,59 +547,51 @@ const MyPageContent = () => {
 
     const handleChargeSubmit = () => {
         if (!impReady) {
-          alert('결제 모듈이 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
-          return;
+            alert('결제 모듈이 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+            return;
         }
-    
+
         const myAmount = Number(chargeAmount);
+        const token = localStorage.getItem("token");
+
         window.IMP.request_pay({
-          pg: "kakaopay",
-          pay_method: "card",
-          name: "충전",
-          amount: myAmount,
-          buyer_email: "gildong@gmail.com",
-          buyer_name: "홍길동",
-          buyer_tel: "010-4242-4242",
-          buyer_addr: "서울특별시 강남구 신사동",
-          buyer_postcode: "01181",
-          m_redirect_url: ""
+            pg: "kakaopay",
+            pay_method: "card",
+            name: "충전",
+            amount: myAmount,
+            m_redirect_url: ""
         }, async (rsp) => {
-          if (rsp.success) {
-            const token = localStorage.getItem("token");
-            try {
-              const response = await axios.post(
-                "https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/payments",
-                {
-                  query: `
-                    mutation {
-                      buyTicket(impUid: "${rsp.imp_uid}", amount: ${rsp.paid_amount}, method: "${rsp.pay_method}") {
-                        id
-                        count
-                        money
-                        method
-                      }
-                    }
-                  `,
-                },
-                {
-                  headers: {
-                    Authorization: token
-                  }
+            if (rsp.success) {
+                try {
+                    const response = await axios.post(
+                        "https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/payments",
+                        {
+                            data: {
+                                imp_uid: rsp.imp_uid,
+                                amount: rsp.paid_amount,
+                                method: rsp.pay_method,
+                            }
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                    // Update user info with charged amount
+                    setBidMoney(prevBidMoney => prevBidMoney + myAmount);
+                    setChargeAmount(0);
+                    closeChargeModal(); // Close the modal after a successful charge
+                    console.log(response.data);
+                } catch (error) {
+                    console.error('결제 정보 등록 실패:', error);
                 }
-              );
-    
-              // Update user info with charged amount
-              setBidMoney(prevBidMoney => prevBidMoney + myAmount);
-              setChargeAmount(0);
-              closeChargeModal(); // Close the modal after a successful charge
-            } catch (error) {
-              console.error('결제 정보 등록 실패:', error);
+            } else {
+                alert(`결제 실패: ${rsp.error_msg}`);
             }
-          } else {
-            alert(`결제 실패: ${rsp.error_msg}`);
-          }
         });
-      };
+    };
 
     const exp = 100;
     const ratio = parseInt(37);
@@ -577,7 +628,7 @@ const MyPageContent = () => {
                         </LExplain>
                         <LTransactionBox>
                             <LBoxInL>
-                                비드머니 {bidMoney}원
+                                비드머니 {formatNumber(bidMoney)}원
                             </LBoxInL>
                             <LBoxInR>
                                 <LBoxChargingBtn onClick={handleChargeClick}>
@@ -630,7 +681,10 @@ const MyPageContent = () => {
                             판매중
                         </ProductMenuItem3>
                     </ProductMenu>
-                    <ProductBox>{selectedMenu}</ProductBox>
+                    <ProductBox>
+                        {selectedMenu === "BidList" && <BidList />}
+                        {selectedMenu === "SellList" && <SellList />}
+                    </ProductBox>
                 </RightProduct>
             </RightBox>
 

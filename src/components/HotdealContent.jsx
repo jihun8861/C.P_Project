@@ -136,8 +136,8 @@ const HotdealContent = () => {
               pageSize: 1
             }
           });
-          newGdArray.push(response.data.files[0].thumbnailLink); // thumbnailLink 저장
           console.log(response.data.files[0].thumbnailLink);
+          newGdArray.push(response.data.files[0].thumbnailLink); // thumbnailLink 저장
         }
         setGdArray(newGdArray);
         setImagesLoaded(true); // 이미지 로드 상태를 true로 설정
@@ -157,7 +157,7 @@ const HotdealContent = () => {
         const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/hotdeals_contents');
         console.log(response.data);
         setData(response.data);
-        setLargeData(response.data[0].price_info);
+        setLargeData(response.data[0].startprice);
         setLargeDataTitle(response.data[0].title);
         setLargeDataPicture(response.data[0].picture); // 첫 번째 항목의 이미지를 LargeDataPicture에 설정
         setLargeDataStartTime(response.data[0].start_time);

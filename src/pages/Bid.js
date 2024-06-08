@@ -456,7 +456,7 @@ const BidContent = () => {
 
     const formattedStartTime = format(startTime, 'yyyy/MM/dd HH:mm');
 
-    const endDate = new Date(startTime.getTime() + 8 * 24 * 60 * 60 * 1000);
+    const endDate = new Date(startTime.getTime() + 1 * 24 * 60 * 60 * 1000); //(startTime.getTime() + 1 * 24 * 60 * 60 * 1000);
     const formattedEndTime = format(endDate, 'yyyy/MM/dd HH:mm');
 
     const [bidList, setBidList] = useState([20,30]);
@@ -502,7 +502,11 @@ const BidContent = () => {
         const now = new Date();
         const timeDifference = endDate - now;
         if (timeDifference <= 0) {
-            return { isEnded: true, timeString: "입찰종료" };
+            //alert("낙찰 되셨습니다! 축하드립니다");
+            return { 
+                isEnded: true, 
+                timeString: "입찰종료" 
+            };
         }
         const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -654,8 +658,8 @@ const BidContent = () => {
         hits();
     }, [userInfo.data.id]);
 
-    const API_KEY = 'YOUR_API_KEY';
-    const DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID';
+    const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
+    const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
     const FILE_NAME = userInfo.data.picture;
     const [nowItem, setNowItem] = useState('');
 

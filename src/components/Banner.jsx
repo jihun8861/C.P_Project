@@ -14,7 +14,7 @@ const fadeIn = keyframes`
 const Container = styled.div`
   width: 100%;
   height: 250px;
-  margin-top: 3%;
+  margin-top: 40px;
   background-image: ${({ backgroundImage }) => `url(${backgroundImage})`};
   background-size: 100% 100%;
   background-position: center;

@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -55,10 +56,28 @@ const StyledButton = styled.button`
 
 const SelectRoom = ({ modalClose }) => {
 	const navigate = useNavigate();
+	const token = localStorage.getItem('token');
 
 	const enterChat = () => {
 		navigate('/chat');
 	}
+
+	useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/my_page', {
+          "data": {
+            "authorization": token
+          }
+        });
+        console.log(response.data.nick_name);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
 
 	return (
 		<Container>
@@ -80,12 +99,6 @@ const SelectRoom = ({ modalClose }) => {
 				</RightSight>
 			</SmallBox>
 			<SmallBox>
-				<LeftSight>
-					<h2>팬이에요 소통해요</h2>
-				</LeftSight>
-				<RightSight>
-					<StyledButton onClick={enterChat}>입장</StyledButton>
-				</RightSight>
 			</SmallBox>
 			<StyledButton style={{ width: "150px", height: "40px", marginTop: "50px" }} onClick={modalClose}>닫기</StyledButton>
 		</Container>

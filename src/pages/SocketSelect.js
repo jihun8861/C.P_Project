@@ -5,14 +5,26 @@ import SelectRoom from "../components/SelectRoom";
 import axios from "axios";
 
 const Container = styled.div`
-  width: 500px;
-  height: 300px;
-  background-color: white;
+  width: 100vw;
+  height: 1000px;
+  background-image: url('./images/support.jpg');
+  background-size: 100% 100%;
+  opacity: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
+
+const Frame = styled.div`
+  width: 500px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+`
 
 const StyledInput = styled.input`
   width: 300px;
@@ -30,6 +42,13 @@ const StyledButton = styled.button`
   border-radius: 10px;
   font-size: 20px;
   cursor: pointer;
+`;
+
+const LobbySelect = styled.div`
+  width: 130px;
+  height: 150px;
+  background-color: #120b0a;
+  opacity: 10%;
 `;
 
 const SocketSelectContent = () => {
@@ -64,10 +83,14 @@ const SocketSelectContent = () => {
 
   return (
     <Container>
-      {openModal && <SelectRoom modalClose={closeSelectRoom} />}
-      <h1 style={{ paddingBottom: "50px" }}>소켓서버 입장</h1>
-      <h2 style={{ paddingBottom: "50px" }}>사용자: {nickname}</h2>
-      <StyledButton onClick={openSelectRoom}>입장</StyledButton>
+      <Frame>
+        {openModal && <SelectRoom modalClose={closeSelectRoom} />}
+        <h1 style={{ paddingBottom: "50px" }}>무엇을 도와드릴까요?</h1>
+        <h4 style={{ paddingBottom: "50px" }}>고객님의 불편사항이나 궁금증을 해결해 드리겠습니다.</h4>
+        <h2 style={{ paddingBottom: "50px" }}>사용자: {nickname}</h2>
+        <div><LobbySelect/></div>
+        <StyledButton onClick={openSelectRoom}>입장</StyledButton>
+      </Frame>
     </Container>
   );
 };

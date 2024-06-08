@@ -82,7 +82,6 @@ const ItemFrame = ({ Product, Price, Image, Array = {}}) => {
       return `${seconds}초 전`;
     }
   };
-  
 
   return (
     <Container>

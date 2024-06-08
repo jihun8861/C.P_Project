@@ -29,9 +29,8 @@ const Frame = styled.div`
 const Advertisement = styled.div`
   width: 160px;
   height: 600px;
-  left: 150px;
-  bottom: 150px;
   position: fixed;
+  transform: translate(-200px, 40px);
   z-index: 2;
   background-image: url("images/adv.png");
   background-size: 100% 100%; 
@@ -45,8 +44,6 @@ const Advertisement = styled.div`
 const ScrollBoxContainer = styled.div`
   width: 120px;
   height: 300px;
-  right: 180px;
-  bottom: 448px;
   position: fixed;
   z-index: 2;
   display: flex;
@@ -57,6 +54,7 @@ const ScrollBoxContainer = styled.div`
   background-size: 100% 100%; 
   background-position: center;
   cursor: pointer;
+  transform:translate(1240px, 40px);
 `;
 
 const ScrollBoxFrame = styled.div`
@@ -139,7 +137,6 @@ const HomeContent = () => {
 
   const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
   const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,11 +150,7 @@ const HomeContent = () => {
         const reversedData = [...sortedData].reverse();
         setRecentInfo(reversedData);
 
-        console.log('Sorted Data:', sortedData);
-        console.log('Reversed Data:', reversedData);
-
         let tempFileData = sortedData.map(item => item.picture);
-        console.log('Temp File Data:', tempFileData);
 
         // 병렬 요청으로 이미지 가져오기
         let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
@@ -167,6 +160,7 @@ const HomeContent = () => {
               pageSize: 1
             }
           });
+          console.log(GCresponse.data.files[0].thumbnailLink)
           return GCresponse.data.files[0].thumbnailLink;
         }));
 

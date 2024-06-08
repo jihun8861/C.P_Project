@@ -5,6 +5,7 @@ import { FaUserLarge } from "react-icons/fa6";
 import { RiCustomerService2Fill } from "react-icons/ri";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
+import axios from "axios";
 
 const Container = styled.div`
   width: 100%;
@@ -39,12 +40,12 @@ const SiteMap = styled.div`
   ul {
     margin-left: 0px;
     height: 40px;
-    width: 135px;
+    min-width: 150px;
     text-decoration: none;
     color: black;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
   }
 `;
 
@@ -199,7 +200,7 @@ const Header = () => {
     if (token) {
       return (
         alert('고객지원으로 이동됨'),
-        navigate('/CustomerSupport')
+        navigate('/SocketSelect')
       )
     }
     else {
@@ -211,6 +212,7 @@ const Header = () => {
   }
 
   const [SearchProduct, setSearchProduct] = useState('');
+  const [bidMondey, setBidMoney] = useState();
 
   const productNameChange = ( e ) => {
     return (
@@ -225,17 +227,45 @@ const Header = () => {
     }
   };
 
-	const handleKeyDown = (e) => {
-		if (e.key === 'Enter') {
-			sendProduct();
-		}
-	};
+   const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+         sendProduct();
+      }
+   };
 
   const handleScrollToTop = () => {
     navigate("/");
     window.location.reload();
   };
   
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/my_page', {
+          "data": {
+            "authorization": token
+          }
+        })
+        setBidMoney(response.data.cash)
+      }
+      catch(error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  },[bidMondey])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/price_data')
+        console.log(response.data)
+      }
+      catch(error) {
+        console.log(error);
+      }
+    }
+  },[])
 
   return (
     <>
@@ -244,14 +274,14 @@ const Header = () => {
           <SiteMap>
             {isLoggedIn ? (
               <Link to="/mypage" style={{textDecoration:"none"}}>
-                <ul style={{paddingLeft:"20%", textDecoration:"none"}}>비드머니: 0원</ul>
+                <ul style={{textDecoration:"none"}}>비드머니: {bidMondey}원</ul>
               </Link>
               ) : ( 
                 <h1></h1>
               )}
             {isLoggedIn ? (
               <Link to="/" style={{textDecoration:"none"}}>
-                <ul onClick={handleLogout} style={{paddingLeft:"20%", textDecoration:"none"}}>로그아웃</ul>
+                <ul onClick={handleLogout} style={{textDecoration:"none"}}>로그아웃</ul>
               </Link>
               ) : ( 
               <Link to="/SignIn" style={{textDecoration:"none"}}>
