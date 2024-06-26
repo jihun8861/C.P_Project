@@ -57,8 +57,19 @@ const StyledButton = styled.button`
 const SelectRoom = ({ modalClose }) => {
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
+	const [username, setUsername] = useState('');
 
-	const enterChat = () => {
+	const enterChat = async() => {
+		try {
+			const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/joinGroup', {
+				"data": {
+					"username": username,
+					"groupname": "자유 게시판"
+				}
+			});
+		} catch (error) {
+			console.log(error);
+		};
 		navigate('/chat');
 	}
 
@@ -70,7 +81,8 @@ const SelectRoom = ({ modalClose }) => {
             "authorization": token
           }
         });
-        console.log(response.data.nick_name);
+        console.log(response.data.name);
+				setUsername(response.data.name);
       } catch (error) {
         console.log(error);
       }

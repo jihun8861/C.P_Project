@@ -113,7 +113,7 @@ const Chat = () => {
   }, []);
 
  useEffect(() => {
-    const ws = new WebSocket('wss://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/ws');
+    const ws = new WebSocket('wss://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/ws/'+ id +'/자유 게시판');
     
     ws.onopen = () => {
       console.log('Connected to the WebSocket server');
@@ -123,7 +123,7 @@ const Chat = () => {
           groupname: "자유토론방", 
         }
       }
-      ws.send(JSON.stringify(payload)); // 사용자 정보를 서버에 전송
+      ws.send(JSON.stringify(payload));
     };
     
     ws.onmessage = (event) => {

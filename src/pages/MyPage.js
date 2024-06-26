@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Layout from "../components/Layout";
 import Modal from "../components/Modal";
 import MyPageItemBox from "../components/MyPageItemBox";
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import axios from "axios";
 
 const Frame = styled.div`
@@ -393,7 +393,7 @@ const ModalContent = styled.div`
 const BidList = () => {
     return (
         <div>
-       
+
         </div>
     );
 };

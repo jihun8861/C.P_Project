@@ -6,8 +6,6 @@ import Auction from './pages/Auction';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import MyPage from './pages/MyPage';
-import Test from './pages/Test';
-import Test2 from './pages/Test2';
 import Bid from './pages/Bid';
 import KakaoRedirect from './pages/KakaoRedirect';
 import reportWebVitals from './reportWebVitals';
@@ -30,8 +28,6 @@ root.render(
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/MyPage" element={<MyPage />} />
         <Route path="/Auction" element={<Auction />} />
-        <Route path="/Test" element={<Test />} />
-        <Route path="/Test2" element={<Test2 />} />
         <Route path="/Bid" element={<Bid />} />
         <Route path="/KakaoRedirect" element={<KakaoRedirect />} />
         <Route path="/CustomerSupport" element={<CustomerSupport />} />
