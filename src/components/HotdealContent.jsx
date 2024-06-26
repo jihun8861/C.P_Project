@@ -109,6 +109,7 @@ const SmallFrameArea = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  margin-bottom: 100px;
 `;
 
 const HotdealContent = () => {

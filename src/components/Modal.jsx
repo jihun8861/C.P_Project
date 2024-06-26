@@ -429,6 +429,8 @@ const Modal = ({ title, onClose, modalKey }) => {
       }
     }
 
+    
+
     // 새로운 비밀번호와 확인 값이 일치하는지 여부
     const isPwMatch = newPw === confirmPw;
     // 현재 비밀번호, 새 비밀번호, 새 비밀번호 확인 값이 비어 있지 않고, 새 비번과 확인 값이 일치하는 경우 변경 가능
@@ -626,7 +628,7 @@ const Modal = ({ title, onClose, modalKey }) => {
     )
   };
 
-  const Modal5 = () => {
+  const Modal5 = () => { // 찜한물품
     return (
       <>
         <ModalMain>
@@ -636,6 +638,9 @@ const Modal = ({ title, onClose, modalKey }) => {
               <SearchIcon />
             </SearchIconWrapper>
           </ModalSearch>
+          <div>
+
+          </div>
         </ModalMain>
       </>
     )

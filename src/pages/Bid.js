@@ -497,6 +497,28 @@ const BidContent = () => {
         },
     });
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await axios.post("https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/is_liked", {
+                    "data": {
+                        "authorization": token,
+                        "content_id": userInfo.data.id
+                    }
+                });
+                console.log(response.data);
+                if (response.data === true) {
+                    setIsClicked(true);
+                    setHeartCount(prevCount => prevCount + 1); // 현재 좋아요 수를 업데이트
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchData();
+    }, [userInfo.data.id]);
+
     // 남은 시간 계산 함수
     const calculateRemainingTime = () => {
         const now = new Date();

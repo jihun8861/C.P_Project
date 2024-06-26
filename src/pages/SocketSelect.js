@@ -44,13 +44,6 @@ const StyledButton = styled.button`
   cursor: pointer;
 `;
 
-const LobbySelect = styled.div`
-  width: 130px;
-  height: 150px;
-  background-color: #120b0a;
-  opacity: 10%;
-`;
-
 const SocketSelectContent = () => {
   const [openModal, setOpenModal] = useState(false);
   const [nickname, setNickname] = useState();
@@ -88,7 +81,6 @@ const SocketSelectContent = () => {
         <h1 style={{ paddingBottom: "50px" }}>무엇을 도와드릴까요?</h1>
         <h4 style={{ paddingBottom: "50px" }}>고객님의 불편사항이나 궁금증을 해결해 드리겠습니다.</h4>
         <h2 style={{ paddingBottom: "50px" }}>사용자: {nickname}</h2>
-        <div><LobbySelect/></div>
         <StyledButton onClick={openSelectRoom}>입장</StyledButton>
       </Frame>
     </Container>

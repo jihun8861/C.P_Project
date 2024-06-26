@@ -317,7 +317,6 @@ const ProductBox = styled.div`
     width: 100%;
     height: auto;
     display: flex;
-    background-color: red;
 `;
 
 // 게이지 디자인
@@ -389,15 +388,6 @@ const ModalContent = styled.div`
     }
 `;
 
-
-const BidList = () => {
-    return (
-        <div>
-
-        </div>
-    );
-};
-
 const SellList = () => {
     const [sellingList, setSellingList] = useState([]);
     const [images, setImages] = useState([]);
@@ -405,56 +395,118 @@ const SellList = () => {
     const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
   
     useEffect(() => {
-      const fetchSellingList = async () => {
-        const token = localStorage.getItem('token');
-        try {
-          const response = await axios.post(
-            'https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/selling_contents',
-            {
-              data: {
-                authorization: token
+        const fetchSellingList = async () => {
+          const token = localStorage.getItem('token');
+          try {
+            const response = await axios.post(
+              'https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/selling_contents',
+              {
+                data: {
+                  authorization: token
+                }
               }
-            }
+            );
+            const data = response.data;
+            setSellingList(data);
+    
+            let tempFileData = data.map(item => item.picture);
+    
+            // Fetch images
+            let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
+              const GCresponse = await axios.get(`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${DRIVE_FOLDER_ID}' in parents&fields=files(id,name,thumbnailLink)`, {
+                params: {
+                  key: API_KEY,
+                  pageSize: 1
+                }
+              });
+              return GCresponse.data.files[0].thumbnailLink;
+            }));
+    
+            setImages(tempImages);
+          } catch (error) {
+            console.error('Error fetching selling list:', error);
+          }
+        };
+    
+        fetchSellingList();
+      }, []);
+    
+      return (
+        <div style={{display: "flex"}}>
+          {sellingList.map((item, index) => (
+            <MyPageItemBox
+              key={index}
+              Product={item.title}
+              Price={item.startprice}
+              Image={images[index]} // 이미지 배열에서 해당 이미지 가져오기
+            />
+          ))}
+        </div>
+      );
+    };
+
+    const BuyList = () => {
+        const [buyList, setbuyList] = useState([]);
+        const [images, setImages] = useState([]);
+        const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
+        const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
+      
+        useEffect(() => {
+            const fetchBuyingList = async () => {
+              const token = localStorage.getItem('token');
+              try {
+                const response = await axios.post(
+                  'https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/buying_contents',
+                  {
+                    data: {
+                      authorization: token
+                    }
+                  }
+                );
+                const data = response.data;
+                setbuyList(data);
+        
+                let tempFileData = data.map(item => item.picture);
+        
+                // Fetch images
+                let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
+                  const GCresponse = await axios.get(`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${DRIVE_FOLDER_ID}' in parents&fields=files(id,name,thumbnailLink)`, {
+                    params: {
+                      key: API_KEY,
+                      pageSize: 1
+                    }
+                  });
+                  return GCresponse.data.files[0].thumbnailLink;
+                }));
+        
+                setImages(tempImages);
+              } catch (error) {
+                console.error('Error fetching buying list:', error);
+              }
+            };
+        
+            fetchBuyingList();
+          }, []);
+        
+          return (
+            <div style={{display: "flex"}}>
+              {buyList.map((item, index) => (
+                <MyPageItemBox
+                  key={index}
+                  Product={item.title}
+                  Price={item.startprice}
+                  Image={images[index]} // 이미지 배열에서 해당 이미지 가져오기
+                />
+              ))}
+            </div>
           );
-          const data = response.data;
-          setSellingList(data);
-  
-          let tempFileData = data.map(item => item.picture);
-  
-          // Fetch images
-          let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
-            const GCresponse = await axios.get(`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${DRIVE_FOLDER_ID}' in parents&fields=files(id,name,thumbnailLink)`, {
-              params: {
-                key: API_KEY,
-                pageSize: 1
-              }
-            });
-            return GCresponse.data.files[0].thumbnailLink;
-          }));
-  
-          setImages(tempImages);
-        } catch (error) {
-          console.error('Error fetching selling list:', error);
-        }
-      };
-  
-      fetchSellingList();
-    }, []);
-  
-    return (
-      <>
-        {sellingList.map((item, index) => (
-          <MyPageItemBox/>
-        ))}
-      </>
-    );
-  };
+        };
   
 
 const MyPageContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
-    const [selectedMenu, setSelectedMenu] = useState("BidList");
+    const [selectedMenu, setSelectedMenu] = useState("BuyList");
     const [modalKey, setModalKey] = useState("");
     const [userInfo, setUserInfo] = useState(null);
     const [name, setName] = useState('');
@@ -593,6 +645,24 @@ const MyPageContent = () => {
         });
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const fetchData = async () => {
+            try {
+                const response = await axios.post("https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/liked_contents", {
+                    "data": {
+                        "authorization": token
+                    }
+                })
+                console.log(response.data);
+            }
+            catch(error) {
+                console.log(error);
+            }
+        }
+        fetchData();
+    }, [])
+
     const exp = 100;
     const ratio = parseInt(37);
 
@@ -634,9 +704,6 @@ const MyPageContent = () => {
                                 <LBoxChargingBtn onClick={handleChargeClick}>
                                     충전
                                 </LBoxChargingBtn>
-                                <LBoxWithdrawBtn>
-                                    출금
-                                </LBoxWithdrawBtn>
                             </LBoxInR>
                         </LTransactionBox>
                     </RightBoxL>
@@ -674,7 +741,7 @@ const MyPageContent = () => {
                 <RightProduct>
                     <h2>내 상품</h2>
                     <ProductMenu>
-                        <ProductMenuItem2 onClick={() => handleProductMenuClick("BidList")}>
+                        <ProductMenuItem2 onClick={() => handleProductMenuClick("BuyList")}>
                             입찰중
                         </ProductMenuItem2>
                         <ProductMenuItem3 onClick={() => handleProductMenuClick("SellList")}>
@@ -682,7 +749,7 @@ const MyPageContent = () => {
                         </ProductMenuItem3>
                     </ProductMenu>
                     <ProductBox>
-                        {selectedMenu === "BidList" && <BidList />}
+                        {selectedMenu === "BuyList" && <BuyList />}
                         {selectedMenu === "SellList" && <SellList />}
                     </ProductBox>
                 </RightProduct>
