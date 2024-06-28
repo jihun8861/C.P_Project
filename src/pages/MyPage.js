@@ -26,7 +26,6 @@ const LeftBox = styled.div`
     font-size: 23px;
     font-weight: bold;
     }
-    border: 1px solid black;
 `;
 
 const LeftMenu = styled.div`
@@ -60,7 +59,6 @@ const RightBox = styled.div`
     justify-content: flex-start;
     flex-direction: column; // 컨텐츠를 세로로 정렬합니다.
     margin-top: auto; // 푸터 아래에 위치하도록 설정합니다.
-    border: 1px solid black;
 `;
 
 
@@ -72,7 +70,6 @@ const RightInfoBox = styled.div`
     display: flex;
     flex-direction: row;
     margin-bottom: 100px;
-    border: 1px solid black;
 `;
 
 //오른쪽 박스의 왼쪽 내용(사용자 이름, 횟수)
@@ -272,7 +269,6 @@ const RightProduct = styled.div`
     h2 {
         padding: 10px;
     }
-    border: solid 1px;
 `;
 
 const ProductMenu = styled.div`
@@ -300,7 +296,6 @@ const ProductMenuItem2 = styled.div`
     width: 20%;
     height: 100%;
     cursor: pointer;
-    border-bottom: solid 2px red;
 `;
 
 const ProductMenuItem3 = styled.div`
@@ -310,7 +305,6 @@ const ProductMenuItem3 = styled.div`
     width: 20%;
     height: 100%;
     cursor: pointer;
-    border-bottom: solid 2px blue;
 `;
 
 const ProductBox = styled.div`
@@ -432,7 +426,7 @@ const SellList = () => {
       }, []);
     
       return (
-        <div style={{display: "flex"}}>
+        <div style={{ display: "flex"}}>
           {sellingList.map((item, index) => (
             <MyPageItemBox
               key={index}
@@ -489,7 +483,7 @@ const SellList = () => {
           }, []);
         
           return (
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex"}}>
               {buyList.map((item, index) => (
                 <MyPageItemBox
                   key={index}

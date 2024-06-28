@@ -90,6 +90,9 @@ const SelectRoom = ({ modalClose }) => {
     fetchData();
   }, []);
 
+	const enterChatBot = () => {
+		navigate('/ChatBot')
+	}
 
 	return (
 		<Container>
@@ -107,7 +110,7 @@ const SelectRoom = ({ modalClose }) => {
 					<h2>운영자와의 대화</h2>
 				</LeftSight>
 				<RightSight>
-					<StyledButton onClick={enterChat}>입장</StyledButton>
+					<StyledButton onClick={enterChatBot}>입장</StyledButton>
 				</RightSight>
 			</SmallBox>
 			<SmallBox>

@@ -452,6 +452,7 @@ const BidContent = () => {
     const [inputBidAmount, setInputBidAmount] = useState(bidAmount + 1000);
     const startTime = new Date(userInfo.data.start_time);
     const token = localStorage.getItem('token');
+    const [isliked, setIsliked] = useState(true);
     startTime.setHours(startTime.getHours() + 9);
 
     const formattedStartTime = format(startTime, 'yyyy/MM/dd HH:mm');
@@ -498,6 +499,10 @@ const BidContent = () => {
     });
 
     useEffect(() => {
+        console.log(userInfo);
+    },[])
+
+    useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem('token');
             try {
@@ -507,17 +512,14 @@ const BidContent = () => {
                         "content_id": userInfo.data.id
                     }
                 });
-                console.log(response.data);
-                if (response.data === true) {
-                    setIsClicked(true);
-                    setHeartCount(prevCount => prevCount + 1); // 현재 좋아요 수를 업데이트
-                }
+                console.log(response.data.is_liked);
+                setIsliked(response.data.is_liked);
             } catch (error) {
                 console.log(error);
             }
         }
         fetchData();
-    }, [userInfo.data.id]);
+    }, [isClicked]);
 
     // 남은 시간 계산 함수
     const calculateRemainingTime = () => {
@@ -625,6 +627,8 @@ const BidContent = () => {
                 }
             });
             console.log(response.data);
+            setIsliked(!isliked);
+            console.log(isliked);
         } catch (error) {
             console.log(error);
         }
@@ -767,7 +771,7 @@ const BidContent = () => {
                         </StatusBox>
 
                         <BtnSpace>
-                            <HeartBtn onClick={handleHeartClick} style={{ backgroundColor: isClicked ? 'black' : '#cccccc' }}>
+                            <HeartBtn onClick={handleHeartClick} style={{ backgroundColor: isliked ? 'black' : '#cccccc' }}>
                                 <Heart style={{ color: isClicked ? 'red' : '#ffffff' }} />
                                 <h2>찜</h2>
                                 <p>{heartCount}</p>

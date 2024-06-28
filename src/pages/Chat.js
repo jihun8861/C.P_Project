@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Layout from "../components/Layout";
 
 const Container = styled.div`
   width: 100%;
-  height: 100vh;
-  background-color: #f3f3f3;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,6 +20,7 @@ const Frame = styled.div`
   justify-content: flex-end;
   align-items: center;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 50px;
 `;
 
 const TextArea = styled.div`
@@ -63,32 +64,23 @@ const ClickButton = styled.button`
   cursor: pointer;
 `;
 
-const MyTalkArea = styled.div`
-  width: 70%;
-  max-width: 50%;
-  height: auto;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  background-color: #f9f9f9;
-  margin: 5px;
-  padding: 10px;
-  font-size: 16px;
+const TalkArea = styled.div`
+  display: flex;
+  justify-content: ${props => (props.isMine ? 'flex-end' : 'flex-start')};
+  width: 100%;
+  margin: 5px 0;
 `;
 
-const YourTalkArea = styled.div`
-  width: 70%;
+const MessageBubble = styled.div`
   max-width: 50%;
-  height: auto;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  background-color: lightyellow;
-  margin: 5px;
   padding: 10px;
+  border-radius: 20px;
   font-size: 16px;
-  align-self: flex-end; /* 오른쪽 정렬 */
+  border: 1px solid #ddd;
+  background-color: ${props => (props.isMine ? '#f9f9f9' : 'lightyellow')};
 `;
 
-const Chat = () => {
+const ChatContent = () => {
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]); // 보낸/받은 메시지 배열
@@ -149,12 +141,20 @@ const Chat = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   return (
     <Container>
       <Frame>
         <TextArea>
           {messages.map((msg, index) => (
-            msg.isMine ? <MyTalkArea key={index}>{msg.text}</MyTalkArea> : <YourTalkArea key={index}>{msg.text}</YourTalkArea>
+            <TalkArea key={index} isMine={msg.isMine}>
+              <MessageBubble isMine={msg.isMine}>{msg.text}</MessageBubble>
+            </TalkArea>
           ))}
         </TextArea>
         <InputArea>
@@ -162,6 +162,7 @@ const Chat = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="메세지를 입력하세요"
           />
           <ClickButton onClick={sendMessage}>전송</ClickButton>
@@ -170,5 +171,9 @@ const Chat = () => {
     </Container>
   );
 };
+
+const Chat = () => {
+  return <Layout props={<ChatContent />} />;
+}
 
 export default Chat;

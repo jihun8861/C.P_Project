@@ -1,11 +1,10 @@
-import React,{ useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
 import { FaCircleCheck } from "react-icons/fa6";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoIosLock } from "react-icons/io";
+import { format } from 'date-fns';
 import axios from "axios";
 
 // 모달이 열릴 때 애니메이션을 정의합니다.
@@ -30,6 +29,7 @@ const ModalLayout = styled.div`
     align-items: center;
     background: rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    overflow-Y: scroll;
 `;
 
 const ModalContent = styled.div`
@@ -38,7 +38,7 @@ const ModalContent = styled.div`
     top: 0;
     right: 0;
     width: 35%;
-    height: 100%;
+    height: auto;
     padding: 15px;
 
     /* 모달이 열릴 때 애니메이션을 적용 */
@@ -368,15 +368,168 @@ const SearchIcon = styled(FiSearch)`
     cursor: pointer;
   `;
 
-const Modal = ({ title, onClose, modalKey }) => {
-  const [content1, setContent1] = useState(false)
-  const [content2, setContent2] = useState(false)
-  const [content3, setContent3] = useState(false)
-  const [content4, setContent4] = useState(false)
-  const [content5, setContent5] = useState(false)
-  const [modal, setModal] = useState(false)
 
-  const titles = ["찾는 물품이 없어요", "물품이 안 팔려요", "다른 서비스로 이동할래요", "보안 및 개인정보가 우려되요", "기타"]
+const ModalContentArea = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+// 여기서부터 ModlaItemFrame
+const ModaltemFrameContainer = styled.div`
+  width: 95%;
+  height: 160px;
+  border: 1px solid #eeeeee;
+  background-color: white;
+  display: flex;
+  margin: 25px 0 25px 0;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  cursor: pointer;
+  &:nth-child(2n) {
+    margin-right: 0; /* 5번째 아이템마다 margin-right을 0으로 설정 */
+  }
+`;
+
+const ModaItemFrameLeftSide = styled.div`
+  width: 30%;
+  height: 100%;
+  border: 1px solid #eeeeee;
+`;
+
+const ModaItemFrameRightSide = styled.div`
+  width: 70%;
+  height: 100%;
+  border: 1px solid #eeeeee;
+`;
+
+const ModaltemFrame= styled.div`
+  width: 100%;
+  height: 100%;
+  border: 1px solid #eeeeee;
+`;
+
+const ModaltemFrameTextFrame = styled.div`
+  width: 100%;
+  height: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 17px;
+  border: 1px solid #eeeeee;
+  padding: 5% 5% 5% 5%;
+  font-weight: 500;
+  span {
+    font-size: 15px;
+    padding: 3px;
+  }
+  p {
+    color: #abacab;
+    font-size: 14px;
+    font-weight: 400;
+  }
+`;
+
+const ModalItemFrame = ({ Product, Price, Image, Array }) => {
+  const navigate = useNavigate();
+  const [remainingTime, setRemainingTime] = useState('');
+  const [isEnded, setIsEnded] = useState(false);
+
+  const handleDetailPost = () => {
+    navigate('/Bid', {
+      state: {
+        data: Array,
+        timeDifference: formatTimeDifference(timeDifference)
+      },
+    });
+  };
+
+  const truncatedProduct = Product.length > 20 ? Product.substring(0, 19) + "..." : Product;
+  const formattedPrice = Price.toLocaleString();
+
+  const startTime = new Date(Array.start_time);
+  startTime.setHours(startTime.getHours() + 9); // Adjust for Korean time zone (UTC+9)
+  const endDate = new Date(startTime.getTime() + 1 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  now.setHours(now.getHours() + 9); // Adjust current time to Korean time zone
+  const timeDifference = now - startTime;
+
+  const formatTimeDifference = (timeDiff) => {
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days}일 전`;
+    } else if (hours > 0) {
+      return `${hours}시간 전`;
+    } else if (minutes > 0) {
+      return `${minutes}분 전`;
+    } else {
+      return `${seconds}초 전`;
+    }
+  };
+
+  const calculateRemainingTime = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 9); // Adjust current time to Korean time zone
+    const timeDifference = endDate - now;
+    if (timeDifference <= 0) {
+      setIsEnded(true);
+      setRemainingTime("입찰종료");
+      return;
+    }
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+    setRemainingTime(`${days}일 ${hours}시간 ${minutes}분 ${seconds}초`);
+  };
+
+  useEffect(() => {
+    calculateRemainingTime();
+    const interval = setInterval(calculateRemainingTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <ModaltemFrameContainer>
+      <ModaItemFrameLeftSide>
+        <ModaltemFrame onClick={handleDetailPost}>
+          <img src={Image} alt="로딩중" />
+        </ModaltemFrame>
+      </ModaItemFrameLeftSide>
+      <ModaItemFrameRightSide>
+        <ModaltemFrameTextFrame>
+          {truncatedProduct}
+          <p style={{paddingTop:"25px"}}>{formatTimeDifference(timeDifference)}</p>
+        </ModaltemFrameTextFrame>
+        <ModaltemFrameTextFrame style={{ height: "40%", fontSize: "20px", fontWeight: "bold" }}>
+          <h4 style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{formattedPrice}<span>원</span></h4>
+        </ModaltemFrameTextFrame>
+        <ModaltemFrameTextFrame>
+          {isEnded ? <span>입찰종료</span> : <>{remainingTime}</>}
+        </ModaltemFrameTextFrame>
+      </ModaItemFrameRightSide>
+    </ModaltemFrameContainer>
+  );
+};
+
+const Modal = ({ title, onClose, modalKey }) => {
+  const [content1, setContent1] = useState(false);
+  const [content2, setContent2] = useState(false);
+  const [content3, setContent3] = useState(false);
+  const [content4, setContent4] = useState(false);
+  const [content5, setContent5] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  const titles = ["찾는 물품이 없어요", "물품이 안 팔려요", "다른 서비스로 이동할래요", "보안 및 개인정보가 우려되요", "기타"];
 
   const handleIconClick = () => {
     onClose(); // 모달을 닫기 위해 부모 컴포넌트에서 전달한 콜백 함수 호출
@@ -411,25 +564,22 @@ const Modal = ({ title, onClose, modalKey }) => {
       setConfirmPwValid(newConfirmPw === newPw);
     };
 
-    const handlePwChange = async() => {
-      try{
-        const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app' + '/api/users/changing_password',{
-            "data": {
-              "user_password": currentPw,
-              "password": newPw,
-              "confirm_password": confirmPw,
-              "authorization": token,
-            }
-        })
+    const handlePwChange = async () => {
+      try {
+        const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/changing_password', {
+          "data": {
+            "user_password": currentPw,
+            "password": newPw,
+            "confirm_password": confirmPw,
+            "authorization": token,
+          }
+        });
         alert("비밀번호 변경 완료");
-        navigate('/')
-      }
-      catch(error){
+        navigate('/');
+      } catch (error) {
         alert("비밀번호가 일치하지 않습니다.");
       }
     }
-
-    
 
     // 새로운 비밀번호와 확인 값이 일치하는지 여부
     const isPwMatch = newPw === confirmPw;
@@ -473,8 +623,8 @@ const Modal = ({ title, onClose, modalKey }) => {
               />
             </PwOkBox>
             {!confirmPwValid && confirmPw.length > 0 && (
-          <ErrorMessage>비밀번호가 일치하지 않습니다</ErrorMessage>
-        )}
+              <ErrorMessage>비밀번호가 일치하지 않습니다</ErrorMessage>
+            )}
 
             <Modal1Text2>
               · 생년월일, 전화번호 등 개인정보와 숫자, 연속된 숫자, 연속된 키보드배열과 같이 쉬운
@@ -491,16 +641,15 @@ const Modal = ({ title, onClose, modalKey }) => {
   const Modal2 = () => {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
-    const onDelete = async() => {
-      const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/' + 'api/users/delete_user',
-      {
+    const onDelete = async () => {
+      const response = await axios.post('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/delete_user', {
         data: {
           authorization: token
         }
-      })
-      alert("회원탈퇴 성공")
-      navigate("/")
-      localStorage.removeItem('token')
+      });
+      alert("회원탈퇴 성공");
+      navigate("/");
+      localStorage.removeItem('token');
     }
 
     return (
@@ -568,7 +717,7 @@ const Modal = ({ title, onClose, modalKey }) => {
             <Modal2CancelBtn onClick={() => { closeModal(); onClose(); }}>
               취소하기
             </Modal2CancelBtn>
-            <Modal2Btn disabled={!isAnyChecked}  onClick={onDelete}>
+            <Modal2Btn disabled={!isAnyChecked} onClick={onDelete}>
               탈퇴하기
             </Modal2Btn>
           </BtnSpace>
@@ -577,7 +726,7 @@ const Modal = ({ title, onClose, modalKey }) => {
     )
   };
 
-    const Modal3 = () => {  //  구매내역
+  const Modal3 = () => {  //  구매내역
     return (
       <>
         <ModalMain>
@@ -587,7 +736,7 @@ const Modal = ({ title, onClose, modalKey }) => {
               <SearchIcon />
             </SearchIconWrapper>
           </ModalSearch>
-          
+
         </ModalMain>
       </>
     )
@@ -600,14 +749,14 @@ const Modal = ({ title, onClose, modalKey }) => {
       console.log("hello")
       const fetchData = async () => {
         try {
-          const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/' + 'api/users/sales_history' , {
+          const response = await axios.get('https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/sales_history', {
             "data": {
               "authorization": "token"
             }
-          })
+          });
           console.log(response.data);
         }
-        catch(error) {
+        catch (error) {
           console.log(error);
         }
       }
@@ -628,31 +777,87 @@ const Modal = ({ title, onClose, modalKey }) => {
     )
   };
 
-  const Modal5 = () => { // 찜한물품
+  const Modal5 = () => {
+    const [likedList, setLikedList] = useState([]);
+    const [images, setImages] = useState([]);
+    const API_KEY = 'AIzaSyAxAqJYZSKbF7pm5XHril-dndv4HdVrbz4';
+    const DRIVE_FOLDER_ID = '1-1w_h8t3ICtJRC57iUuTG-Mwy5sUFXJQ';
+  
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      const fetchData = async () => {
+        try {
+          const response = await axios.post(
+            "https://port-0-cpbeck-hdoly2altu7slne.sel5.cloudtype.app/api/users/liked_contents",
+            {
+              data: {
+                authorization: token
+              }
+            }
+          );
+          const data = response.data;
+          setLikedList(data);
+  
+          let tempFileData = data.map(item => item.picture);
+  
+          // Fetch images
+          let tempImages = await Promise.all(tempFileData.map(async (fileName) => {
+            const GCresponse = await axios.get(
+              `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${DRIVE_FOLDER_ID}' in parents&fields=files(id,name,thumbnailLink)`,
+              {
+                params: {
+                  key: API_KEY,
+                  pageSize: 1
+                }
+              }
+            );
+            return GCresponse.data.files[0].thumbnailLink;
+          }));
+  
+          setImages(tempImages);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchData();
+    }, []);
+  
     return (
       <>
         <ModalMain>
-          <ModalSearch>
-            <SearchInput type="text" placeholder="상품명을 입력해주세요." />
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-          </ModalSearch>
-          <div>
-
-          </div>
+          <ModalContentArea>
+            {likedList.map((item, index) => {
+              // Adjust the start_time to the Korean time zone (UTC+9)
+              const startTime = new Date(item.start_time);
+              startTime.setHours(startTime.getHours() + 9);
+  
+              return (
+                <ModalItemFrame
+                  marginTop="40px"
+                  backgroundColor="blue"
+                  key={index}
+                  Product={item.title}
+                  StartTime={startTime.toISOString()} // Pass the adjusted time
+                  Price={item.startprice}
+                  Array={item}
+                  Image={images[index]} // 이미지를 전달
+                />
+              );
+            })}
+          </ModalContentArea>
         </ModalMain>
       </>
-    )
+    );
   };
+  
 
   const CustomModal = () => {
     console.log(modalKey)
-    if (modalKey == "edit") return (<Modal1 />)
-    else if (modalKey == "withdraw") return (<Modal2 />)
-    else if (modalKey == "buyList") return (<Modal3 />)
-    else if (modalKey == "sellList") return (<Modal4 />)
-    else if (modalKey == "heartList") return (<Modal5 />)
+    if (modalKey === "edit") return (<Modal1 />)
+    else if (modalKey === "withdraw") return (<Modal2 />)
+    else if (modalKey === "buyList") return (<Modal3 />)
+    else if (modalKey === "sellList") return (<Modal4 />)
+    else if (modalKey === "heartList") return (<Modal5 />)
   }
 
   return (
